@@ -7,9 +7,10 @@
 class scalarField
 {
 protected:
-    fftw_real* field;
+    //fftw_real* field;
     fftw_real min, max;
 public:
+    fftw_real* field;
     scalarField();
     void initialize(int); // mimics the simulation class initialization pattern
 
@@ -22,8 +23,9 @@ public:
 class vectorialField : public scalarField
 {
 private:
-    scalarField x,y;
+    //scalarField x,y;
 public:
+    scalarField x,y;
     void initialize(int); // also initializes x,y
 
     void update_x(int, fftw_real);

@@ -55,10 +55,10 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
           for (j = 0; j < DIM; j++)
           {
             idx = (j * DIM) + i;
-            direction_to_color(simulation.get_vx()[idx],simulation.get_vy()[idx],color_dir);
+            direction_to_color(simulation.get_v().x.read(idx),simulation.get_v().y.read(idx),color_dir);
             glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-            glVertex2f((wn + (fftw_real)i * wn) + vec_scale * simulation.get_vx()[idx],
-                       (hn + (fftw_real)j * hn) + vec_scale * simulation.get_vy()[idx]);
+            glVertex2f((wn + (fftw_real)i * wn) + vec_scale * simulation.get_v().x.read(idx),
+                       (hn + (fftw_real)j * hn) + vec_scale * simulation.get_v().y.read(idx));
           }
         glEnd();
     }
@@ -141,9 +141,9 @@ void MyGLWidget::do_one_simulation_step(bool update)
     if (!simulation.get_frozen())
     {
         simulation.set_forces(DIM);
-        simulation.solve(DIM, simulation.get_vx(), simulation.get_vy(), simulation.get_vx0(),
+        simulation.solve(DIM, simulation.get_v().x.field, simulation.get_v().y.field, simulation.get_vx0(),
                          simulation.get_vy0(), simulation.get_visc(), simulation.get_dt());
-        simulation.diffuse_matter(DIM, simulation.get_vx(), simulation.get_vy(),
+        simulation.diffuse_matter(DIM, simulation.get_v().x.field, simulation.get_v().y.field,
                                   simulation.get_rho(), simulation.get_rho0(), simulation.get_dt());
 
     }

@@ -48,6 +48,7 @@ void Simulation::init_simulation(int n)
 {
     int i; size_t dim;
     dim     = n * 2*(n/2+1)*sizeof(fftw_real);        //Allocate data structures
+    v.initialize(n * 2*(n/2+1));
     vx       = (fftw_real*) malloc(dim);
     vy       = (fftw_real*) malloc(dim);
     vm       = (fftw_real*) malloc(dim);
@@ -95,7 +96,7 @@ void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw
     }
 
     for (i=0;i<n*n;i++)
-    { vx[i] += dt*vx0[i]; vx0[i] = vx[i]; vy[i] += dt*vy0[i]; vy0[i] = vy[i]; }
+    { v.x.update(i, v.x.read(i)+dt*vx0[i]); vx0[i] = v.x.read(i); v.y.update(i, v.y.read(i)+dt*vy0[i]); vy0[i] = v.y.read(i); }
 
     for ( x=0.5f/n,i=0 ; i<n ; i++,x+=1.0f/n )
        for ( y=0.5f/n,j=0 ; j<n ; j++,y+=1.0f/n )
@@ -108,13 +109,13 @@ void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw
           j0 = clamp(y0); t = y0-j0;
           j0 = (n+(j0%n))%n;
           j1 = (j0+1)%n;
-          vx[i+n*j] = (1-s)*((1-t)*vx0[i0+n*j0]+t*vx0[i0+n*j1])+s*((1-t)*vx0[i1+n*j0]+t*vx0[i1+n*j1]);
-          vy[i+n*j] = (1-s)*((1-t)*vy0[i0+n*j0]+t*vy0[i0+n*j1])+s*((1-t)*vy0[i1+n*j0]+t*vy0[i1+n*j1]);
+          v.x.update(i+n*j, (1-s)*((1-t)*vx0[i0+n*j0]+t*vx0[i0+n*j1])+s*((1-t)*vx0[i1+n*j0]+t*vx0[i1+n*j1]));
+          v.y.update(i+n*j, (1-s)*((1-t)*vy0[i0+n*j0]+t*vy0[i0+n*j1])+s*((1-t)*vy0[i1+n*j0]+t*vy0[i1+n*j1]));
        }
 
     for(i=0; i<n; i++)
       for(j=0; j<n; j++)
-      {  vx0[i+(n+2)*j] = vx[i+n*j]; vy0[i+(n+2)*j] = vy[i+n*j]; }
+      {  vx0[i+(n+2)*j] = v.x.read(i+n*j); vy0[i+(n+2)*j] = v.y.read(i+n*j); }
 
     FFT(1,vx0);
     FFT(1,vy0);
@@ -145,8 +146,8 @@ void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw
     for (i=0;i<n;i++)
        for (j=0;j<n;j++)
        {
-           vx[i+n*j] = f*vx0[i+(n+2)*j];
-           vy[i+n*j] = f*vy0[i+(n+2)*j];
+           v.x.update(i+n*j, f*vx0[i+(n+2)*j]);
+           v.y.update(i+n*j, f*vy0[i+(n+2)*j]);
 
        }
 
@@ -164,8 +165,8 @@ void Simulation::diffuse_matter(int n, fftw_real *vx, fftw_real *vy, scalarField
     for ( x=0.5f/n,i=0 ; i<n ; i++,x+=1.0f/n )
         for ( y=0.5f/n,j=0 ; j<n ; j++,y+=1.0f/n )
         {
-            x0 = n*(x-dt*vx[i+n*j])-0.5f;
-            y0 = n*(y-dt*vy[i+n*j])-0.5f;
+            x0 = n*(x-dt*v.x.read(i+n*j))-0.5f;
+            y0 = n*(y-dt*v.y.read(i+n*j))-0.5f;
             i0 = clamp(x0);
             s = x0-i0;
             i0 = (n+(i0%n))%n;

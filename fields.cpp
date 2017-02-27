@@ -44,12 +44,12 @@ void vectorialField::initialize(int N)
 void vectorialField::update_x(int ix, fftw_real value)
 {
     x.update(ix, value);
-    update(ix, x.read(ix)*x.read(ix) + y.read(ix)*y.read(ix));
+    update(ix, sqrt(x.read(ix)*x.read(ix) + y.read(ix)*y.read(ix)));
 }
 void vectorialField::update_y(int ix, fftw_real value)
 {
     y.update(ix, value);
-    update(ix, x.read(ix)*x.read(ix) + y.read(ix)*y.read(ix));
+    update(ix, sqrt(x.read(ix)*x.read(ix) + y.read(ix)*y.read(ix)));
 }
 
 fftw_real vectorialField::read_x(int ix){
