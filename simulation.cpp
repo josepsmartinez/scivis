@@ -17,18 +17,16 @@ bool Simulation::get_frozen() const{return frozen;}
 double Simulation::get_dt() const{return dt;}
 float Simulation::get_visc() const{return visc;}
 
-//fftw_real* Simulation::get_f() const { return fscalar; }
+vectorialField Simulation::get_f() const { return f; }
 //fftw_real* Simulation::get_fx() const{return fx;}
 //fftw_real* Simulation::get_fy() const{return fy;}
 fftw_real Simulation::get_fmin() const{return f_min;}
 fftw_real Simulation::get_fmax() const{return f_max;}
 
-scalarField Simulation::get_rho() const{return rho;}
-scalarField Simulation::get_rho0() const {return rho0;}
+Field Simulation::get_rho() const{return rho;}
+Field Simulation::get_rho0() const {return rho0;}
 
 vectorialField Simulation::get_v() const {return v;}
-fftw_real* Simulation::get_vx() const {return vx;}
-fftw_real* Simulation::get_vy() const {return vy;}
 fftw_real Simulation::get_vmin() const{return v_min;}
 fftw_real Simulation::get_vmax() const{return v_max;}
 fftw_real* Simulation::get_vm() const {return vm;}
@@ -49,8 +47,6 @@ void Simulation::init_simulation(int n)
     int i; size_t dim;
     dim     = n * 2*(n/2+1)*sizeof(fftw_real);        //Allocate data structures
     v.initialize(n * 2*(n/2+1));
-    vx       = (fftw_real*) malloc(dim);
-    vy       = (fftw_real*) malloc(dim);
     vm       = (fftw_real*) malloc(dim);
     vx0      = (fftw_real*) malloc(dim);
     vy0      = (fftw_real*) malloc(dim);
@@ -67,9 +63,7 @@ void Simulation::init_simulation(int n)
 
     for (i = 0; i < n * n; i++)                      //Initialize data structures to 0
     //{ vx[i] = vy[i] = vx0[i] = vy0[i] = fx[i] = fy[i] = rho[i] = rho0[i] = 0.0f; }
-    { vx[i] = vy[i] = vx0[i] = vy0[i] = 0.0f; }
-    f_min = v_min = 1.f;
-    f_max = v_max = 0.f;
+    { vx0[i] = vy0[i] = 0.0f; }
 }
 
 //FFT: Execute the Fast Fourier Transform on the dataset 'vx'.
@@ -84,7 +78,7 @@ int Simulation::clamp(float x)
 { return ((x)>=0.0?((int)(x)):(-((int)(1-(x))))); }
 
 //solve: Solve (compute) one step of the fluid flow simulation
-void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw_real* vy0, fftw_real visc, fftw_real dt)
+void Simulation::solve(int n)
 {
     fftw_real x, y, x0, y0, f, r, U[2], V[2], s, t;
     int i, j, i0, j0, i1, j1;
@@ -96,7 +90,7 @@ void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw
     }
 
     for (i=0;i<n*n;i++)
-    { v.x.update(i, v.x.read(i)+dt*vx0[i]); vx0[i] = v.x.read(i); v.y.update(i, v.y.read(i)+dt*vy0[i]); vy0[i] = v.y.read(i); }
+    { v.update_x(i, v.read_x(i)+dt*vx0[i]); vx0[i] = v.read_x(i); v.update_y(i, v.read_y(i)+dt*vy0[i]); vy0[i] = v.read_y(i); }
 
     for ( x=0.5f/n,i=0 ; i<n ; i++,x+=1.0f/n )
        for ( y=0.5f/n,j=0 ; j<n ; j++,y+=1.0f/n )
@@ -109,13 +103,13 @@ void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw
           j0 = clamp(y0); t = y0-j0;
           j0 = (n+(j0%n))%n;
           j1 = (j0+1)%n;
-          v.x.update(i+n*j, (1-s)*((1-t)*vx0[i0+n*j0]+t*vx0[i0+n*j1])+s*((1-t)*vx0[i1+n*j0]+t*vx0[i1+n*j1]));
-          v.y.update(i+n*j, (1-s)*((1-t)*vy0[i0+n*j0]+t*vy0[i0+n*j1])+s*((1-t)*vy0[i1+n*j0]+t*vy0[i1+n*j1]));
+          v.update_x(i+n*j, (1-s)*((1-t)*vx0[i0+n*j0]+t*vx0[i0+n*j1])+s*((1-t)*vx0[i1+n*j0]+t*vx0[i1+n*j1]));
+          v.update_y(i+n*j, (1-s)*((1-t)*vy0[i0+n*j0]+t*vy0[i0+n*j1])+s*((1-t)*vy0[i1+n*j0]+t*vy0[i1+n*j1]));
        }
 
     for(i=0; i<n; i++)
       for(j=0; j<n; j++)
-      {  vx0[i+(n+2)*j] = v.x.read(i+n*j); vy0[i+(n+2)*j] = v.y.read(i+n*j); }
+      {  vx0[i+(n+2)*j] = v.read_x(i+n*j); vy0[i+(n+2)*j] = v.read_y(i+n*j); }
 
     FFT(1,vx0);
     FFT(1,vy0);
@@ -146,8 +140,8 @@ void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw
     for (i=0;i<n;i++)
        for (j=0;j<n;j++)
        {
-           v.x.update(i+n*j, f*vx0[i+(n+2)*j]);
-           v.y.update(i+n*j, f*vy0[i+(n+2)*j]);
+           v.update_x(i+n*j, f*vx0[i+(n+2)*j]);
+           v.update_y(i+n*j, f*vy0[i+(n+2)*j]);
 
        }
 
@@ -157,7 +151,7 @@ void Simulation::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw
 
 // diffuse_matter: This function diffuses matter that has been placed in the velocity field. It's almost identical to the
 // velocity diffusion step in the function above. The input matter densities are in rho0 and the result is written into rho.
-void Simulation::diffuse_matter(int n, fftw_real *vx, fftw_real *vy, scalarField rho, scalarField rho0, fftw_real dt)
+void Simulation::diffuse_matter(int n)
 {
     fftw_real x, y, x0, y0, s, t;
     int i, j, i0, j0, i1, j1;

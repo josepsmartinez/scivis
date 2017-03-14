@@ -65,3 +65,4 @@ void Window::on_hedgehogColorDir_clicked(bool checked)
 {
     ui->myGLWidget->colorDir(checked);
 }
+

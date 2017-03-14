@@ -262,6 +262,11 @@
       </item>
       <item>
        <property name="text">
+        <string>color array</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>rainbow2</string>
        </property>
       </item>

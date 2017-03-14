@@ -19,15 +19,13 @@ class Simulation {
         bool get_frozen() const;
         double get_dt() const;				//simulation time step
         float get_visc() const;				//fluid viscosity
-        scalarField get_rho() const;
+        Field get_rho() const;
         vectorialField get_f() const;
         //fftw_real* get_fy() const;
         //fftw_real* get_fx() const;
         fftw_real get_fmin() const; fftw_real get_fmax() const;
-        scalarField get_rho0() const;
+        Field get_rho0() const;
         vectorialField get_v() const;
-        fftw_real* get_vy() const;
-        fftw_real* get_vx() const;
         fftw_real* get_vm() const;
         fftw_real get_vmin() const; fftw_real get_vmax() const;
         fftw_real* get_vx0() const;
@@ -49,10 +47,10 @@ class Simulation {
 
         // diffuse_matter: This function diffuses matter that has been placed in the velocity field. It's almost identical to the
         // velocity diffusion step in the function above. The input matter densities are in rho0 and the result is written into rho.
-        void diffuse_matter(int, fftw_real*, fftw_real*, scalarField, scalarField, fftw_real);
+        void diffuse_matter(int);
 
         //solve: Solve (compute) one step of the fluid flow simulation
-        void solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw_real* vy0, fftw_real visc, fftw_real dt);
+        void solve(int n);
 
         int clamp(float);
         void drag(int mx , int my, int DIM, int winWidth ,int winHeight);
@@ -61,9 +59,8 @@ class Simulation {
         // member variables
         int n;
         double dt;				//simulation time step
-        float visc;				//fluid viscosity
-        fftw_real *vx, *vy;             //(vx,vy)   = velocity field at the current moment
-        vectorialField v;
+        float visc;				//fluid viscosity    
+        vectorialField v; //(vx,vy)   = velocity field at the current moment
         fftw_real *vm;             // velocity magnitude at the current moment
         fftw_real *vx0, *vy0;           //(vx0,vy0) = velocity field at the previous moment
         //fftw_real *fx, *fy, *fscalar;

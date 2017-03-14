@@ -51,10 +51,12 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     if (draw_vecs)
     {
         glBegin(GL_LINES);				//draw velocities
+        
+        
         for (i = 0; i < DIM; i++)
           for (j = 0; j < DIM; j++)
           {
-            idx = (j * DIM) + i;
+            idx = (j * DIM) + i; // normal grid
             direction_to_color(simulation.get_v().x.read(idx),simulation.get_v().y.read(idx),color_dir);
             glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
             glVertex2f((wn + (fftw_real)i * wn) + vec_scale * simulation.get_v().x.read(idx),
@@ -102,18 +104,21 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 set_colormap(simulation.get_v()[idx2],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px2, py2);
                 set_colormap(simulation.get_v()[idx3],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px3, py3);
                 */
-                set_colormap(simulation.get_rho().read(idx0),scalar_col);    glVertex2f(px0, py0);
-                set_colormap(simulation.get_rho().read(idx1),scalar_col);    glVertex2f(px1, py1);
-                set_colormap(simulation.get_rho().read(idx2),scalar_col);    glVertex2f(px2, py2);
+                set_colormap(simulation.get_rho().read(idx0),scalar_col, 0.8f);    glVertex2f(px0, py0);
+                set_colormap(simulation.get_rho().read(idx1),scalar_col, 0.8f);    glVertex2f(px1, py1);
+                set_colormap(simulation.get_rho().read(idx2),scalar_col, 0.8f);    glVertex2f(px2, py2);
 
 
-                set_colormap(simulation.get_rho().read(idx0),scalar_col);    glVertex2f(px0, py0);
-                set_colormap(simulation.get_rho().read(idx2),scalar_col);    glVertex2f(px2, py2);
-                set_colormap(simulation.get_rho().read(idx3),scalar_col);    glVertex2f(px3, py3);
+                set_colormap(simulation.get_rho().read(idx0),scalar_col, 0.8f);    glVertex2f(px0, py0);
+                set_colormap(simulation.get_rho().read(idx2),scalar_col, 0.8f);    glVertex2f(px2, py2);
+                set_colormap(simulation.get_rho().read(idx3),scalar_col, 0.8f);    glVertex2f(px3, py3);
 
             }
         }
         glEnd();
+
+        //printf("%f %f \n", simulation.get_rho().get_min(), simulation.get_rho().get_max());
+        simulation.get_rho().reset_limits();
     }
 
     glFlush();
@@ -141,10 +146,8 @@ void MyGLWidget::do_one_simulation_step(bool update)
     if (!simulation.get_frozen())
     {
         simulation.set_forces(DIM);
-        simulation.solve(DIM, simulation.get_v().x.field, simulation.get_v().y.field, simulation.get_vx0(),
-                         simulation.get_vy0(), simulation.get_visc(), simulation.get_dt());
-        simulation.diffuse_matter(DIM, simulation.get_v().x.field, simulation.get_v().y.field,
-                                  simulation.get_rho(), simulation.get_rho0(), simulation.get_dt());
+        simulation.solve(DIM);
+        simulation.diffuse_matter(DIM);
 
     }
     if(update){
@@ -180,6 +183,7 @@ void MyGLWidget::timestep(int position)
     //      case 'T': simulation.set_dt(simulation.get_dt() + 0.001); break;
     static int last_pos_timestep = 500;				//remembers last slider location, statics only get initialized once, after that they keep the new value
     double new_pos = position - last_pos_timestep;
+    new_pos /= 2.f;
     double old_dt = simulation.get_dt();
     double new_dt = old_dt + new_pos * 0.001; //easier to debug on separate line
     if (new_dt < 0){
@@ -223,6 +227,9 @@ void MyGLWidget::scalarColoring(QString scalartype){
     }
     else if (scalartype == "black&white") {
        scalar_col = COLOR_BLACKWHITE;
+    }
+    else if (scalartype == "color array") {
+       scalar_col = COLOR_ARRAY;
     }
     else if (scalartype == "rainbow2") {
         scalar_col = COLOR_RAINBOW2;
