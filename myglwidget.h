@@ -58,6 +58,9 @@ private:
     Simulation simulation;
     fftw_real  cell_width;
     fftw_real  cell_height;
+
+    Field* scalar_draw;
+    vectorialField* vectorial_draw;
 };
 
 #endif // MYGLWIDGET_H

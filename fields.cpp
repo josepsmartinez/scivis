@@ -46,6 +46,10 @@ fftw_real Field::scale(fftw_real value, fftw_real smin=NULL, fftw_real smax=NULL
     return (value - smin)/(smax - smin);
 }
 
+int Field::index1d(int i, int j, int DIM) {
+    return j*DIM + i;
+}
+
 //
 
 void vectorialField::initialize(int N)

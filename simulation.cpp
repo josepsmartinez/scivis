@@ -17,18 +17,14 @@ bool Simulation::get_frozen() const{return frozen;}
 double Simulation::get_dt() const{return dt;}
 float Simulation::get_visc() const{return visc;}
 
-vectorialField Simulation::get_f() const { return f; }
+vectorialField* Simulation::get_f()  {return &f;}
 //fftw_real* Simulation::get_fx() const{return fx;}
 //fftw_real* Simulation::get_fy() const{return fy;}
-fftw_real Simulation::get_fmin() const{return f_min;}
-fftw_real Simulation::get_fmax() const{return f_max;}
 
-Field Simulation::get_rho() const{return rho;}
-Field Simulation::get_rho0() const {return rho0;}
+Field* Simulation::get_rho() {return &rho;}
+Field* Simulation::get_rho0()  {return &rho0;}
 
-vectorialField Simulation::get_v() const {return v;}
-fftw_real Simulation::get_vmin() const{return v_min;}
-fftw_real Simulation::get_vmax() const{return v_max;}
+vectorialField* Simulation::get_v()  {return &v;}
 fftw_real* Simulation::get_vm() const {return vm;}
 
 fftw_real* Simulation::get_vx0() const {return vx0;}

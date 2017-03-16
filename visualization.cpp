@@ -18,7 +18,7 @@ float max(float x, float y)
 void rainbow(float value,float* R,float* G,float* B)
 {
    const float dx=0.8f;
-   if (value<0) value=0; if (value>1) value=1;
+   //if (value<0) value=0; if (value>1) value=1;
    value = (6-2*dx)*value+dx;
 
    *R = max(0.0f, (3-(float)fabs(value-4)-(float)fabs(value-5))/2);
@@ -29,7 +29,7 @@ void rainbow(float value,float* R,float* G,float* B)
 //rainbow: Implements a color palette, mapping the scalar 'value' RGB parabolas
 void rainbow2(float value,float* R,float* G,float* B)
 {
-    if (value<0) value=0; if (value>1) value=1;
+    //if (value<0) value=0; if (value>1) value=1;
 
    *R = max(0.0f, -4*value*(value-2) - 3);
    *G = max(0.0f, -4*value*(value-1)    );
@@ -39,7 +39,7 @@ void rainbow2(float value,float* R,float* G,float* B)
 //bluered
 void bluered(float value,float* R,float* G,float* B)
 {
-    if (value<0) value=0; if (value>1) value=1;
+    //if (value<0) value=0; if (value>1) value=1;
 
    *R = max(0.0f, -4*value*(value-2) - 3);
    *G = max(0.0f, -4*value*(value-1)    );
@@ -51,7 +51,7 @@ void color_array(float value,float* R,float* G,float* B,vector<Color> array) {
     int n = array.size(); // number of colors
     float dx = 1 / ((float)n-1); // interval of each interpolation
 
-    if (value<0) value=0; if (value>1) value=1.f;
+    //if (value<0) value=0; if (value>1) value=1.f;
     int c_index = 0;
 
     while(value > dx) { // finds interpolation interval and its parameter

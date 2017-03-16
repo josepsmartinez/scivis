@@ -22,6 +22,7 @@ public:
     void reset_limits();
 
     fftw_real scale(fftw_real, fftw_real, fftw_real);
+    static int index1d(int, int, int);
 };
 
 class scalarField : public Field

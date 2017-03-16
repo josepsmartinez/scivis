@@ -39,7 +39,6 @@ private slots:
 
     void on_hedgehogColorDir_clicked(bool checked);
 
-    void on_simulationTimestepSlider_actionTriggered(int action);
 
 private:
     Ui::Window *ui;

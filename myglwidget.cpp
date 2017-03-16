@@ -20,6 +20,10 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     QTimer *timer = new QTimer;
     timer->start(1);
     QObject::connect(timer,SIGNAL(timeout()),this,SLOT(do_one_simulation_step()));
+
+    scalar_draw = simulation.get_v();
+    vectorial_draw = simulation.get_v();
+
 }
 
 MyGLWidget::~MyGLWidget()
@@ -34,6 +38,7 @@ void MyGLWidget::initializeGL()
 
 void MyGLWidget::paintGL() //glutDisplayFunc(display);
 {
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_TABLE);
     glEnable(GL_SMOOTH);
@@ -57,10 +62,10 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
           for (j = 0; j < DIM; j++)
           {
             idx = (j * DIM) + i; // normal grid
-            direction_to_color(simulation.get_v().x.read(idx),simulation.get_v().y.read(idx),color_dir);
+            direction_to_color(vectorial_draw->x.read(idx),vectorial_draw->y.read(idx),color_dir);
             glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-            glVertex2f((wn + (fftw_real)i * wn) + vec_scale * simulation.get_v().x.read(idx),
-                       (hn + (fftw_real)j * hn) + vec_scale * simulation.get_v().y.read(idx));
+            glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vectorial_draw->x.read(idx),
+                       (hn + (fftw_real)j * hn) + vec_scale * vectorial_draw->y.read(idx));
           }
         glEnd();
     }
@@ -76,49 +81,42 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
             {
                 px0 = wn + (fftw_real)i * wn;
                 py0 = hn + (fftw_real)j * hn;
-                idx0 = (j * DIM) + i;
+                //idx0 = (j * DIM) + i;
+                idx0 = Field::index1d(i, j, DIM);
 
 
                 px1 = wn + (fftw_real)i * wn;
                 py1 = hn + (fftw_real)(j + 1) * hn;
-                idx1 = ((j + 1) * DIM) + i;
+                //idx1 = ((j + 1) * DIM) + i;
+                idx1 = Field::index1d(i, j+1, DIM);
 
 
                 px2 = wn + (fftw_real)(i + 1) * wn;
                 py2 = hn + (fftw_real)(j + 1) * hn;
-                idx2 = ((j + 1) * DIM) + (i + 1);
+                //idx2 = ((j + 1) * DIM) + (i + 1);
+                idx2 = Field::index1d(i+1, j+1, DIM);
 
 
                 px3 = wn + (fftw_real)(i + 1) * wn;
                 py3 = hn + (fftw_real)j * hn;
-                idx3 = (j * DIM) + (i + 1);
+                //idx3 = (j * DIM) + (i + 1);
+                idx3 = Field::index1d(i+1, j, DIM);
 
 
-                /*
-                set_colormap(simulation.get_v()[idx0],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px0, py0);
-                set_colormap(simulation.get_v()[idx1],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px1, py1);
-                set_colormap(simulation.get_v()[idx2],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px2, py2);
-
-
-                set_colormap(simulation.get_v()[idx0],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px0, py0);
-                set_colormap(simulation.get_v()[idx2],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px2, py2);
-                set_colormap(simulation.get_v()[idx3],scalar_col,simulation.get_vmin(),simulation.get_vmax());    glVertex2f(px3, py3);
-                */
-                set_colormap(simulation.get_rho().read(idx0),scalar_col, 0.8f);    glVertex2f(px0, py0);
-                set_colormap(simulation.get_rho().read(idx1),scalar_col, 0.8f);    glVertex2f(px1, py1);
-                set_colormap(simulation.get_rho().read(idx2),scalar_col, 0.8f);    glVertex2f(px2, py2);
-
-
-                set_colormap(simulation.get_rho().read(idx0),scalar_col, 0.8f);    glVertex2f(px0, py0);
-                set_colormap(simulation.get_rho().read(idx2),scalar_col, 0.8f);    glVertex2f(px2, py2);
-                set_colormap(simulation.get_rho().read(idx3),scalar_col, 0.8f);    glVertex2f(px3, py3);
+                set_colormap(scalar_draw->read(idx0),scalar_col, 0.1f);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx1),scalar_col, 0.1f);    glVertex2f(px1, py1);
+                set_colormap(scalar_draw->read(idx2),scalar_col, 0.1f);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx0),scalar_col, 0.1f);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx2),scalar_col, 0.1f);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx3),scalar_col, 0.1f);    glVertex2f(px3, py3);
 
             }
         }
         glEnd();
 
-        //printf("%f %f \n", simulation.get_rho().get_min(), simulation.get_rho().get_max());
-        simulation.get_rho().reset_limits();
+        printf("%f %f \n", scalar_draw->get_min(), scalar_draw->get_max());
+        printf("%f %f \n", simulation.get_f()->get_min(), simulation.get_f()->get_max());
+        scalar_draw->reset_limits();
     }
 
     glFlush();

@@ -19,15 +19,11 @@ class Simulation {
         bool get_frozen() const;
         double get_dt() const;				//simulation time step
         float get_visc() const;				//fluid viscosity
-        Field get_rho() const;
-        vectorialField get_f() const;
-        //fftw_real* get_fy() const;
-        //fftw_real* get_fx() const;
-        fftw_real get_fmin() const; fftw_real get_fmax() const;
-        Field get_rho0() const;
-        vectorialField get_v() const;
+        Field* get_rho() ;
+        vectorialField* get_f() ;
+        Field* get_rho0() ;
+        vectorialField* get_v() ;
         fftw_real* get_vm() const;
-        fftw_real get_vmin() const; fftw_real get_vmax() const;
         fftw_real* get_vx0() const;
         fftw_real* get_vy0() const;
         //Mutator functions
