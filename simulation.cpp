@@ -21,8 +21,8 @@ vectorialField* Simulation::get_f()  {return &f;}
 //fftw_real* Simulation::get_fx() const{return fx;}
 //fftw_real* Simulation::get_fy() const{return fy;}
 
-Field* Simulation::get_rho() {return &rho;}
-Field* Simulation::get_rho0()  {return &rho0;}
+scalarField* Simulation::get_rho() {return &rho;}
+scalarField* Simulation::get_rho0()  {return &rho0;}
 
 vectorialField* Simulation::get_v()  {return &v;}
 fftw_real* Simulation::get_vm() const {return vm;}
@@ -42,18 +42,14 @@ void Simulation::init_simulation(int n)
 {
     int i; size_t dim;
     dim     = n * 2*(n/2+1)*sizeof(fftw_real);        //Allocate data structures
-    v.initialize(n * 2*(n/2+1));
+    v.initialize(n * 2*(n/2+1), n);
     vm       = (fftw_real*) malloc(dim);
     vx0      = (fftw_real*) malloc(dim);
     vy0      = (fftw_real*) malloc(dim);
     dim     = n * n * sizeof(fftw_real);
-    //fx      = (fftw_real*) malloc(dim);
-    //fy      = (fftw_real*) malloc(dim);
-    f.initialize(n*n);
-    //rho     = (fftw_real*) malloc(dim);
-    rho.initialize(n*n);
-    //rho0    = (fftw_real*) malloc(dim);
-    rho0.initialize(n*n);
+    f.initialize(n*n, n);
+    rho.initialize(n*n, n);
+    rho0.initialize(n*n, n);
     plan_rc = rfftw2d_create_plan(n, n, FFTW_REAL_TO_COMPLEX, FFTW_IN_PLACE);
     plan_cr = rfftw2d_create_plan(n, n, FFTW_COMPLEX_TO_REAL, FFTW_IN_PLACE);
 

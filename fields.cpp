@@ -1,17 +1,24 @@
 #include "fields.h"
 
+
+
 Field::Field()
 {
 
 }
 
-void Field::initialize(int N)
+void Field::initialize(int N, int DIM)
 {
+    dim_size = DIM;
+
     field = (fftw_real*)malloc(sizeof(fftw_real) * N);
     for(int i=0; i<N; i++)
         field[i] = 0.f;
+
     reset_limits();
 }
+
+
 
 void Field::update(int ix, fftw_real value)
 {
@@ -46,16 +53,32 @@ fftw_real Field::scale(fftw_real value, fftw_real smin=NULL, fftw_real smax=NULL
     return (value - smin)/(smax - smin);
 }
 
-int Field::index1d(int i, int j, int DIM) {
-    return j*DIM + i;
+int Field::index1d(int i, int j) {
+    return j*50 + i;
 }
 
-//
+// SCALAR
 
-void vectorialField::initialize(int N)
+void scalarField::initialize(int N, int DIM)
 {
-    Field::initialize(N);
-    x.initialize(N); y.initialize(N);
+    Field::initialize(N, DIM);
+    gradient.initialize(N, DIM);
+}
+
+void scalarField::update(int ix, fftw_real value)
+{
+    Field::update(ix, value);
+    // updates gradient field
+
+    //if()
+}
+
+// VECTORIAL
+
+void vectorialField::initialize(int N, int DIM)
+{
+    Field::initialize(N, DIM);
+    x.initialize(N, DIM); y.initialize(N, DIM);
 }
 
 void vectorialField::update_x(int ix, fftw_real value)
@@ -75,3 +98,4 @@ fftw_real vectorialField::read_x(int ix){
 fftw_real vectorialField::read_y(int ix){
     return y.read(ix);
 }
+

@@ -19,9 +19,9 @@ class Simulation {
         bool get_frozen() const;
         double get_dt() const;				//simulation time step
         float get_visc() const;				//fluid viscosity
-        Field* get_rho() ;
+        scalarField* get_rho() ;
         vectorialField* get_f() ;
-        Field* get_rho0() ;
+        scalarField* get_rho0() ;
         vectorialField* get_v() ;
         fftw_real* get_vm() const;
         fftw_real* get_vx0() const;

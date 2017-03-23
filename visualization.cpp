@@ -78,6 +78,7 @@ void set_colormap(float value, int scalar_col, fftw_real max=1.f, fftw_real min=
 
     // normalizes value
     value = (value - min)/(max - min);
+    if(value>1.f) value=1.f; if(value<0.f) value=0.f;
 
     // do gremio
     vector<Color> carr;
