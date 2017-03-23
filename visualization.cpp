@@ -71,8 +71,7 @@ void color_array(float value,float* R,float* G,float* B,vector<Color> array) {
 
 
 //set_colormap: Sets three different types of colormaps
-void set_colormap(float value, int scalar_col, fftw_real max=1.f, fftw_real min=0.f)//, float color_clamp_min, float color_clamp_max,
-                  //int color_bands, int hue_degree, float saturation, bool scale_colors, float vy_min, float vy_max, float alpha)
+void set_colormap(float value, int scalar_col, fftw_real max=1.f, fftw_real min=0.f)
 {
     float R,G,B;
 

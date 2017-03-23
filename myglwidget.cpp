@@ -3,6 +3,7 @@
 #include <QtWidgets>
 #include <QtOpenGL>
 #include <glut.h>          //the GLUT graphics library
+#include <math.h>
 #include "myglwidget.h"
 #include "visualization.cpp"
 #include <simulation.cpp>              //the numerical simulation FFTW library
@@ -14,7 +15,12 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     vec_scale = 1000;			//scaling of hedgehogs
     draw_smoke = true;           //draw the smoke or not
     draw_vecs = true;            //draw the vector field or not
+    hedgehog_type = HEDGEHOG_LINE;
+    clamp = false;
+    clamp_max = 1;
+    clamp_min = 0;
     scalar_col = 0;           //method for scalar coloring
+    data_type = DATA_DENSITY;
     DIM = 50;
     simulation.init_simulation(DIM);
     QTimer *timer = new QTimer;
@@ -55,19 +61,48 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
     if (draw_vecs)
     {
-        glBegin(GL_LINES);				//draw velocities
-        
-        
-        for (i = 0; i < DIM; i++)
-          for (j = 0; j < DIM; j++)
-          {
-            idx = (j * DIM) + i; // normal grid
-            direction_to_color(vectorial_draw->x.read(idx),vectorial_draw->y.read(idx),color_dir);
-            glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-            glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vectorial_draw->x.read(idx),
-                       (hn + (fftw_real)j * hn) + vec_scale * vectorial_draw->y.read(idx));
-          }
-        glEnd();
+        if(hedgehog_type == HEDGEHOG_LINE)
+        {
+            glBegin(GL_LINES);				//draw velocities
+
+
+            for (i = 0; i < DIM; i++)
+              for (j = 0; j < DIM; j++)
+              {
+                idx = (j * DIM) + i; // normal grid
+                direction_to_color(vectorial_draw->x.read(idx),vectorial_draw->y.read(idx),color_dir);
+                glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
+                glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vectorial_draw->x.read(idx),
+                           (hn + (fftw_real)j * hn) + vec_scale * vectorial_draw->y.read(idx));
+              }
+            glEnd();
+        }else
+        {
+            for (i = 0; i < DIM; i++)
+              for (j = 0; j < DIM; j++)
+              {
+                idx = (j * DIM) + i; // normal grid
+                direction_to_color(vectorial_draw->x.read(idx),vectorial_draw->y.read(idx),color_dir);
+                fftw_real x = vec_scale * vectorial_draw->x.read(idx);
+                fftw_real y = vec_scale * vectorial_draw->y.read(idx);
+                float angle=0;
+                float lenght = sqrt(x*x + y*y);
+                if(lenght != 0)
+                {
+                    x = x/lenght; // normalize
+                    y = y/lenght;
+                    angle = atan2 (-x,y) * (180 / M_PI);
+                }
+                if(hedgehog_type == HEDGEHOG_CONE)
+                {
+                    drawCone(angle,lenght,i*wn,j*hn,10,wn,hn);
+                }
+                else if(hedgehog_type == HEDGEHOG_ARROW)
+                {
+                    drawArrow(angle,lenght,i*wn,j*hn,10,wn,hn);
+                }
+              }
+        }
     }
     if (draw_smoke)
     {
@@ -102,13 +137,21 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 idx3 = (j * DIM) + (i + 1);
                 //idx3 = scalar_draw->index1d(i+1, j);
 
-
-                set_colormap(scalar_draw->read(idx0),scalar_col, 1.f);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx1),scalar_col, 1.f);    glVertex2f(px1, py1);
-                set_colormap(scalar_draw->read(idx2),scalar_col, 1.f);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx0),scalar_col, 1.f);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx2),scalar_col, 1.f);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx3),scalar_col, 1.f);    glVertex2f(px3, py3);
+                float max,min =0;
+                if(clamp)
+                {
+                    min = clamp_min;
+                    max = clamp_max;
+                }else
+                {
+                    max = scalar_draw->get_max();
+                }
+                set_colormap(scalar_draw->read(idx0),scalar_col, max, min);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx1),scalar_col, max, min);    glVertex2f(px1, py1);
+                set_colormap(scalar_draw->read(idx2),scalar_col, max, min);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx0),scalar_col, max, min);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx2),scalar_col, max, min);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx3),scalar_col, max, min);    glVertex2f(px3, py3);
 
             }
         }
@@ -120,6 +163,65 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     }
 
     glFlush();
+}
+void MyGLWidget::drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn)
+{
+    glPushMatrix();
+    glTranslatef(x_coord,y_coord, 0);
+    glScaled(wn,hn,0);
+    glRotated(angle,0,0,1);
+    glScaled(log(lenght/scaling_factor+1),log(lenght/(scaling_factor/2)+1),0);
+    glBegin(GL_TRIANGLES);
+
+    //arrow head
+    float head_height = 1.0/2;
+    float head_width = 1.0/4;
+    glVertex2f(-head_width, head_height);
+    glVertex2f(0, 2*head_height);
+    glVertex2f(head_width, head_height);
+    // arrow tail, 2 triangles forming one square
+    float tail_width = 1.0/15;
+    glScaled(log(lenght+1),log(lenght+1),0);
+    glVertex2f(-tail_width, head_height);
+    glVertex2f(tail_width, 0);
+    glVertex2f(tail_width, head_height);
+    glVertex2f(-tail_width, 0);
+    glVertex2f(-tail_width, head_height);
+    glVertex2f(tail_width, 0);
+
+    glEnd();
+    glPopMatrix(); // now it's at normal scale again
+    glLoadIdentity(); // needed to stop the rotating, otherwise rotates the entire drawing
+}
+
+void MyGLWidget::drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn)
+{
+    glPushMatrix();
+    glTranslatef(x_coord,y_coord, 0);
+    glScaled(wn,hn,0);
+    glRotated(angle,0,0,1);
+    glScaled(log(lenght/scaling_factor+1),log(lenght/(scaling_factor/2)+1),0);
+
+    // draw the upper part of the cone
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0, 0, 0);
+    // Smooth shading
+
+    glShadeModel(GL_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    //glEnable (GL_LIGHTING);
+    float radius = 1/3; // calculate radius
+    // foreach degree angle draw circle + arrow point
+    for (int angle = 1; angle <= 360; angle+=10) {
+        glColor4f(0.5,0.5,0.5,0.5-(0.5/angle)); // colors(R, G, B, alpha)
+        glVertex2f(1.0/2, 1); // draw cone point/tip
+        glVertex2f(sin(angle) * radius, cos(angle) * radius); // draw cone base (circle)
+    }
+
+
+    glEnd();
+    glPopMatrix(); // now it's at normal scale again
+    glLoadIdentity(); // needed to stop the rotating, otherwise rotates the entire drawing
 }
 
 void MyGLWidget::resizeGL(int width, int height)
@@ -136,7 +238,7 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int mx = event->x();
     int my = event->y();
-    simulation.drag(mx,my, DIM, winWidth, winHeight); // Works for Niek
+    simulation.drag(mx,my, DIM, winWidth/2, winHeight/2);
 }
 
 void MyGLWidget::do_one_simulation_step(bool update)
@@ -172,6 +274,36 @@ void MyGLWidget::drawMatter(bool new_draw_smoke)
 void MyGLWidget::drawHedgehogs(bool new_draw_vecs)
 {
     draw_vecs = new_draw_vecs;
+}
+
+void MyGLWidget::setClamp(bool new_clamp)
+{
+    clamp = new_clamp;
+}
+
+void MyGLWidget::setClampMax(double new_clamp_max)
+{
+    clamp_max = new_clamp_max;
+}
+
+void MyGLWidget::setClampMin(double new_clamp_min)
+{
+    clamp_min = new_clamp_min;
+}
+
+void MyGLWidget::changeData(QString new_hedgehog_type){
+    if (new_hedgehog_type == "Density") {
+       data_type = DATA_DENSITY;
+       scalar_draw = simulation.get_rho();
+    }
+    else if (new_hedgehog_type == "Velocity") {
+       data_type = DATA_VELOCITY;
+       scalar_draw = simulation.get_v();
+    }
+    else if (new_hedgehog_type == "Forcefield") {
+       data_type = DATA_FORCEFIELD;
+       scalar_draw = simulation.get_f();
+    }
 }
 
 void MyGLWidget::timestep(int position)
@@ -231,5 +363,17 @@ void MyGLWidget::scalarColoring(QString scalartype){
     }
     else if (scalartype == "rainbow2") {
         scalar_col = COLOR_RAINBOW2;
+    }
+}
+
+void MyGLWidget::hedgehogType(QString new_hedgehog_type){
+    if (new_hedgehog_type == "Lines") {
+       hedgehog_type = HEDGEHOG_LINE;
+    }
+    else if (new_hedgehog_type == "Cones") {
+       hedgehog_type = HEDGEHOG_CONE;
+    }
+    else if (new_hedgehog_type == "Arrows") {
+       hedgehog_type = HEDGEHOG_ARROW;
     }
 }
