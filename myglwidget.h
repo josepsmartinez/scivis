@@ -9,6 +9,10 @@
 #include "simulation.h"
 #include <vector>
 
+const int DATA_DENSITY=0;   //possible data types
+const int DATA_VELOCITY=1;
+const int DATA_FORCEFIELD=2;
+
 class MyGLWidget : public QGLWidget
 {
     Q_OBJECT
@@ -30,6 +34,13 @@ public slots:
     void drawMatter(bool);
 
     void drawHedgehogs(bool);
+
+    void setClamp(bool new_clamp);
+
+    void setClampMax(double);
+    void setClampMin(double);
+
+    void changeData(QString datatype);
 
     void timestep(int position);
 
@@ -53,6 +64,9 @@ private:
     float vec_scale;			//scaling of hedgehogs
     bool   draw_smoke;           //draw the smoke or not
     bool   draw_vecs;            //draw the vector field or not
+    bool clamp;
+    float clamp_max, clamp_min;
+    int data_type; // data used
     int   scalar_col;           //method for scalar coloring
     int DIM;
     Simulation simulation;

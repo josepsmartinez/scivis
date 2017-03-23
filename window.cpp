@@ -66,3 +66,38 @@ void Window::on_hedgehogColorDir_clicked(bool checked)
     ui->myGLWidget->colorDir(checked);
 }
 
+void Window::on_scalarColoring_2_activated(const QString &arg1)
+{
+    ui->myGLWidget->changeData(arg1);
+}
+
+
+void Window::on_scale_clicked(bool checked)
+{
+    ui->myGLWidget->setClamp(!checked);
+}
+
+void Window::on_clamp_clicked(bool checked)
+{
+    ui->myGLWidget->setClamp(checked);
+}
+
+void Window::on_clamp_min_valueChanged(double arg1)
+{
+    ui->myGLWidget->setClampMin(arg1);
+    if(ui->clamp_max->value()<arg1)
+    {
+        ui->clamp_max->setValue(arg1);
+        ui->myGLWidget->setClampMax(arg1);
+    }
+}
+
+void Window::on_clamp_max_valueChanged(double arg1)
+{
+    ui->myGLWidget->setClampMax(arg1);
+    if(ui->clamp_min->value()>arg1)
+    {
+        ui->clamp_min->setValue(arg1);
+        ui->myGLWidget->setClampMin(arg1);
+    }
+}

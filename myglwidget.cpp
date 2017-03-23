@@ -14,14 +14,18 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     vec_scale = 1000;			//scaling of hedgehogs
     draw_smoke = true;           //draw the smoke or not
     draw_vecs = true;            //draw the vector field or not
+    clamp = false;
+    clamp_max = 1;
+    clamp_min = 0;
     scalar_col = 0;           //method for scalar coloring
+    data_type = DATA_DENSITY;
     DIM = 50;
     simulation.init_simulation(DIM);
     QTimer *timer = new QTimer;
     timer->start(1);
     QObject::connect(timer,SIGNAL(timeout()),this,SLOT(do_one_simulation_step()));
 
-    scalar_draw = simulation.get_v();
+    scalar_draw = simulation.get_rho();
     vectorial_draw = simulation.get_v();
 
 }
@@ -102,13 +106,21 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 //idx3 = (j * DIM) + (i + 1);
                 idx3 = Field::index1d(i+1, j, DIM);
 
-
-                set_colormap(scalar_draw->read(idx0),scalar_col, 0.1f);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx1),scalar_col, 0.1f);    glVertex2f(px1, py1);
-                set_colormap(scalar_draw->read(idx2),scalar_col, 0.1f);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx0),scalar_col, 0.1f);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx2),scalar_col, 0.1f);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx3),scalar_col, 0.1f);    glVertex2f(px3, py3);
+                float max,min =0;
+                if(clamp)
+                {
+                    min = clamp_min;
+                    max = clamp_max;
+                }else
+                {
+                    max = scalar_draw->get_max();
+                }
+                set_colormap(scalar_draw->read(idx0),scalar_col, max, min);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx1),scalar_col, max, min);    glVertex2f(px1, py1);
+                set_colormap(scalar_draw->read(idx2),scalar_col, max, min);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx0),scalar_col, max, min);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx2),scalar_col, max, min);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx3),scalar_col, max, min);    glVertex2f(px3, py3);
 
             }
         }
@@ -136,7 +148,7 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int mx = event->x();
     int my = event->y();
-    simulation.drag(mx,my, DIM, winWidth, winHeight); // Works for Niek
+    simulation.drag(mx,my, DIM, winWidth/2, winHeight/2);
 }
 
 void MyGLWidget::do_one_simulation_step(bool update)
@@ -172,6 +184,36 @@ void MyGLWidget::drawMatter(bool new_draw_smoke)
 void MyGLWidget::drawHedgehogs(bool new_draw_vecs)
 {
     draw_vecs = new_draw_vecs;
+}
+
+void MyGLWidget::setClamp(bool new_clamp)
+{
+    clamp = new_clamp;
+}
+
+void MyGLWidget::setClampMax(double new_clamp_max)
+{
+    clamp_max = new_clamp_max;
+}
+
+void MyGLWidget::setClampMin(double new_clamp_min)
+{
+    clamp_min = new_clamp_min;
+}
+
+void MyGLWidget::changeData(QString datatype){
+    if (datatype == "Density") {
+       data_type = DATA_DENSITY;
+       scalar_draw = simulation.get_rho();
+    }
+    else if (datatype == "Velocity") {
+       data_type = DATA_VELOCITY;
+       scalar_draw = simulation.get_v();
+    }
+    else if (datatype == "Forcefield") {
+       data_type = DATA_FORCEFIELD;
+       scalar_draw = simulation.get_f();
+    }
 }
 
 void MyGLWidget::timestep(int position)
