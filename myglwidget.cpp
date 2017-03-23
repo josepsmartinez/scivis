@@ -238,7 +238,8 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int mx = event->x();
     int my = event->y();
-    simulation.drag(mx,my, DIM, winWidth, winHeight);
+    //simulation.drag(mx,my, DIM, winWidth/2, winHeight/2); // jean
+    simulation.drag(mx,my, DIM, winWidth, winHeight); // terrordoclash
 }
 
 void MyGLWidget::do_one_simulation_step(bool update)
