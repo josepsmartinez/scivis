@@ -39,7 +39,7 @@ private slots:
 
     void on_hedgehogColorDir_clicked(bool checked);
 
-    void on_scalarColoring_2_activated(const QString &arg1);
+    void on_Dataset_activated(const QString &arg1);
 
     void on_scale_clicked(bool checked);
 
@@ -48,6 +48,8 @@ private slots:
     void on_clamp_min_valueChanged(double arg1);
 
     void on_clamp_max_valueChanged(double arg1);
+
+    void on_HedgehogType_activated(const QString &arg1);
 
 private:
     Ui::Window *ui;

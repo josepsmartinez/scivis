@@ -66,7 +66,7 @@ void Window::on_hedgehogColorDir_clicked(bool checked)
     ui->myGLWidget->colorDir(checked);
 }
 
-void Window::on_scalarColoring_2_activated(const QString &arg1)
+void Window::on_Dataset_activated(const QString &arg1)
 {
     ui->myGLWidget->changeData(arg1);
 }
@@ -100,4 +100,9 @@ void Window::on_clamp_max_valueChanged(double arg1)
         ui->clamp_min->setValue(arg1);
         ui->myGLWidget->setClampMin(arg1);
     }
+}
+
+void Window::on_HedgehogType_activated(const QString &arg1)
+{
+    ui->myGLWidget->hedgehogType(arg1);
 }

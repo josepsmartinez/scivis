@@ -209,7 +209,7 @@
          <bool>true</bool>
         </property>
        </widget>
-       <widget class="QComboBox" name="scalarColoring_2">
+       <widget class="QComboBox" name="Dataset">
         <property name="geometry">
          <rect>
           <x>90</x>
@@ -264,7 +264,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="Colormap">
         <attribute name="title">
@@ -551,6 +551,31 @@
          <property name="checked">
           <bool>true</bool>
          </property>
+        </widget>
+        <widget class="QComboBox" name="HedgehogType">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>115</width>
+           <height>26</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string>Lines</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Arrows</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cones</string>
+          </property>
+         </item>
         </widget>
        </widget>
       </widget>

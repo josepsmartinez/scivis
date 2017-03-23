@@ -167,7 +167,7 @@ HEADERS += \
 
 INCLUDEPATH += $$PWD/fftw-2.1.3/fftw $$PWD/fftw-2.1.3/rfftw
 
-LIBS += -L$$PWD/GL/ -lglut32 -lopengl32
+LIBS += -L$$PWD/GL/ -lglut32 -lopengl32 -lglu32
 
 INCLUDEPATH += $$PWD/GL
 DEPENDPATH += $$PWD/GL

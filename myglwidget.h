@@ -13,6 +13,10 @@ const int DATA_DENSITY=0;   //possible data types
 const int DATA_VELOCITY=1;
 const int DATA_FORCEFIELD=2;
 
+const int HEDGEHOG_LINE=0;   //possible hedgehog types
+const int HEDGEHOG_CONE=1;
+const int HEDGEHOG_ARROW=2;
+
 class MyGLWidget : public QGLWidget
 {
     Q_OBJECT
@@ -35,6 +39,8 @@ public slots:
 
     void drawHedgehogs(bool);
 
+    void hedgehogType(QString new_hedgehog_type);
+
     void setClamp(bool new_clamp);
 
     void setClampMax(double);
@@ -47,6 +53,11 @@ public slots:
     void hedgehogScaling(int position);
 
     void fluidViscosity(int position);
+
+    void drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
+
+    void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
+
 
 protected:
     void initializeGL();
@@ -64,6 +75,7 @@ private:
     float vec_scale;			//scaling of hedgehogs
     bool   draw_smoke;           //draw the smoke or not
     bool   draw_vecs;            //draw the vector field or not
+    int hedgehog_type;
     bool clamp;
     float clamp_max, clamp_min;
     int data_type; // data used
