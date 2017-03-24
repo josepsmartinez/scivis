@@ -53,7 +53,7 @@ private slots:
 
     void on_numberColors_valueChanged(int arg1);
 
-private:
+public:
     Ui::Window *ui;
 };
 

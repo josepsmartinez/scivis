@@ -17,14 +17,14 @@ bool Simulation::get_frozen() const{return frozen;}
 double Simulation::get_dt() const{return dt;}
 float Simulation::get_visc() const{return visc;}
 
-vectorialField* Simulation::get_f()  {return &f;}
+cVectorialField* Simulation::get_f()  {return &f;}
 //fftw_real* Simulation::get_fx() const{return fx;}
 //fftw_real* Simulation::get_fy() const{return fy;}
 
-scalarField* Simulation::get_rho() {return &rho;}
-scalarField* Simulation::get_rho0()  {return &rho0;}
+cField* Simulation::get_rho() {return &rho;}
+cField* Simulation::get_rho0()  {return &rho0;}
 
-vectorialField* Simulation::get_v()  {return &v;}
+cVectorialField* Simulation::get_v()  {return &v;}
 fftw_real* Simulation::get_vm() const {return vm;}
 
 fftw_real* Simulation::get_vx0() const {return vx0;}
@@ -151,8 +151,8 @@ void Simulation::diffuse_matter(int n)
     for ( x=0.5f/n,i=0 ; i<n ; i++,x+=1.0f/n )
         for ( y=0.5f/n,j=0 ; j<n ; j++,y+=1.0f/n )
         {
-            x0 = n*(x-dt*v.x.read(i+n*j))-0.5f;
-            y0 = n*(y-dt*v.y.read(i+n*j))-0.5f;
+            x0 = n*(x-dt*v.read_x(i+n*j))-0.5f;
+            y0 = n*(y-dt*v.read_y(i+n*j))-0.5f;
             i0 = clamp(x0);
             s = x0-i0;
             i0 = (n+(i0%n))%n;

@@ -9,7 +9,7 @@ class Field
 protected:
     //fftw_real* field;
 
-    fftw_real dim_size;
+    int dim_size;
     fftw_real min, max;
 
     //void update_grad(int);
@@ -20,6 +20,7 @@ public:
     void initialize(int, int); // mimics the simulation class initialization pattern
 
     void update(int, fftw_real);
+    void inc(int, fftw_real);
     fftw_real read(int);
 
     fftw_real get_min();
@@ -30,32 +31,72 @@ public:
     int index1d(int, int);
 };
 
+
+
+// extends base interface to vectorial f=(x,y)
+//  where the main read represent the field magnitude |f|
 class vectorialField : public Field
 {
+protected:
+    Field x,y;
 private:
     //scalarField x,y;
 public:
-    Field x,y;
+    //gradientField gradient;
+
     void initialize(int,int); // also initializes x,y
 
 
 
     void update_x(int, fftw_real);
     void update_y(int, fftw_real);
+    void inc_x(int, fftw_real);
+    void inc_y(int, fftw_real);
 
     fftw_real read_x(int);
     fftw_real read_y(int);
 };
 
-class scalarField : public Field
+class gradientField : public vectorialField {
+private:
+protected:
+    const fftw_real delta = 1;
+public:
+    gradientField(Field* main_field): main(main_field) {}
+    Field* main;
+    void update(int, fftw_real); // updates based on main field
+};
+
+class cField : public Field
 {
 protected:
-    vectorialField gradient;
 
 public:
+    cField(): gradient(this) {}
+
+    gradientField gradient;
+
     void initialize(int,int); // also initializes gradient
     void update(int, fftw_real); // also updates gradient
+
+    gradientField* get_gradient(){return &gradient;}
 };
+
+class cVectorialField : public vectorialField {
+protected:
+    gradientField gradient;
+public:
+    cVectorialField(): gradient(this) {}
+
+    void initialize(int,int); // also initializes gradient
+    void update_x(int, fftw_real); // also updates gradient
+    void update_y(int, fftw_real); // also updates gradient
+
+
+    gradientField* get_gradient(){return &gradient;}
+};
+
+
 
 
 

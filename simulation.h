@@ -19,10 +19,10 @@ class Simulation {
         bool get_frozen() const;
         double get_dt() const;				//simulation time step
         float get_visc() const;				//fluid viscosity
-        scalarField* get_rho() ;
-        vectorialField* get_f() ;
-        scalarField* get_rho0() ;
-        vectorialField* get_v() ;
+        cField* get_rho() ;
+        cVectorialField* get_f() ;
+        cField* get_rho0() ;
+        cVectorialField* get_v() ;
         fftw_real* get_vm() const;
         fftw_real* get_vx0() const;
         fftw_real* get_vy0() const;
@@ -56,13 +56,13 @@ class Simulation {
         int n;
         double dt;				//simulation time step
         float visc;				//fluid viscosity    
-        vectorialField v; //(vx,vy)   = velocity field at the current moment
+        cVectorialField v; //(vx,vy)   = velocity field at the current moment
         fftw_real *vm;             // velocity magnitude at the current moment
         fftw_real *vx0, *vy0;           //(vx0,vy0) = velocity field at the previous moment
         //fftw_real *fx, *fy, *fscalar;
-        vectorialField f; //(f.x,f.y)   = user-controlled simulation forces, steered with the mouse
+        cVectorialField f; //(f.x,f.y)   = user-controlled simulation forces, steered with the mouse
         //fftw_real *rho, *rho0;			//smoke density at the current (rho) and previous (rho0) moment
-        scalarField rho, rho0;
+        cField rho, rho0;
         // min/max are lowest and highest values in the grid
         fftw_real vx_min, vx_max, vy_min, vy_max, v_min, v_max;
         fftw_real fx_min, fx_max, fy_min, fy_max, f_min, f_max;

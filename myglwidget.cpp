@@ -5,6 +5,7 @@
 #include <glut.h>          //the GLUT graphics library
 #include <math.h>
 #include "myglwidget.h"
+#include "window.h"
 #include "visualization.cpp"
 #include <simulation.cpp>              //the numerical simulation FFTW library
 
@@ -29,7 +30,7 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     QObject::connect(timer,SIGNAL(timeout()),this,SLOT(do_one_simulation_step()));
 
     scalar_draw = simulation.get_rho();
-    vectorial_draw = simulation.get_v();
+    vectorial_draw = (simulation.get_v()->get_gradient());
 
 }
 
@@ -71,10 +72,10 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
               for (j = 0; j < DIM; j++)
               {
                 idx = (j * DIM) + i; // normal grid
-                direction_to_color(vectorial_draw->x.read(idx),vectorial_draw->y.read(idx),color_dir);
+                direction_to_color(vectorial_draw->read_x(idx),vectorial_draw->read_y(idx),color_dir);
                 glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-                glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vectorial_draw->x.read(idx),
-                           (hn + (fftw_real)j * hn) + vec_scale * vectorial_draw->y.read(idx));
+                glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vectorial_draw->read_x(idx),
+                           (hn + (fftw_real)j * hn) + vec_scale * vectorial_draw->read_y(idx));
               }
             glEnd();
         }else
@@ -83,9 +84,9 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
               for (j = 0; j < DIM; j++)
               {
                 idx = (j * DIM) + i; // normal grid
-                direction_to_color(vectorial_draw->x.read(idx),vectorial_draw->y.read(idx),color_dir);
-                fftw_real x = vec_scale * vectorial_draw->x.read(idx);
-                fftw_real y = vec_scale * vectorial_draw->y.read(idx);
+                direction_to_color(vectorial_draw->read_x(idx),vectorial_draw->read_y(idx),color_dir);
+                fftw_real x = vec_scale * vectorial_draw->read_x(idx);
+                fftw_real y = vec_scale * vectorial_draw->read_y(idx);
                 float angle=0;
                 float lenght = sqrt(x*x + y*y);
                 if(lenght != 0)
@@ -159,7 +160,13 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
         glEnd();
 
         printf("%f %f \n", scalar_draw->get_min(), scalar_draw->get_max());
-        printf("%f %f \n", simulation.get_f()->get_min(), simulation.get_f()->get_max());
+        //printf("%f %f \n", simulation.get_f()->get_min(), simulation.get_f()->get_max());
+
+           // NAO FACO A MENOR IDEIA DE COMO ATUALIZAR A INTERFACE (acho que vai ser necessario)
+        //Window* parent = qobject_cast<Window*>(this->parent());
+        //qobject_cast<QMainWindow>(this->parent()).ui->clamp_min->value();
+        //parent->clamp_min->value();
+        //clamp_min->value();
         //scalar_draw->reset_limits();
     }
 
@@ -301,15 +308,15 @@ void MyGLWidget::setNColors(int n)
 void MyGLWidget::changeData(QString new_hedgehog_type){
     if (new_hedgehog_type == "Density") {
        data_type = DATA_DENSITY;
-       scalar_draw = simulation.get_rho();
+       scalar_draw = (Field*) simulation.get_rho();
     }
     else if (new_hedgehog_type == "Velocity") {
        data_type = DATA_VELOCITY;
-       scalar_draw = simulation.get_v();
+       scalar_draw = (Field*) simulation.get_v();
     }
     else if (new_hedgehog_type == "Forcefield") {
        data_type = DATA_FORCEFIELD;
-       scalar_draw = simulation.get_f();
+       scalar_draw = (Field*) simulation.get_f();
     }
 }
 
