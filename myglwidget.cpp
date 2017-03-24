@@ -9,6 +9,8 @@
 #include "visualization.cpp"
 #include <simulation.cpp>              //the numerical simulation FFTW library
 
+#include "streamline.h"
+
 MyGLWidget::MyGLWidget(QWidget *parent)
 {
     //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
@@ -159,8 +161,16 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
         }
         glEnd();
 
-        printf("%f %f \n", scalar_draw->get_min(), scalar_draw->get_max());
+        //printf("%f %f \n", scalar_draw->get_min(), scalar_draw->get_max());
         //printf("%f %f \n", simulation.get_f()->get_min(), simulation.get_f()->get_max());
+
+        //StreamLine stream;
+        //StreamLine send(0+10);
+        int j=0;
+        for (StreamLine i(0, vectorial_draw, DIM); i!=50; i++,j++)
+            printf("%d streamei %d \n", *i, j);
+
+
 
            // NAO FACO A MENOR IDEIA DE COMO ATUALIZAR A INTERFACE (acho que vai ser necessario)
         //Window* parent = qobject_cast<Window*>(this->parent());

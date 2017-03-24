@@ -151,7 +151,8 @@ SOURCES += \
     fftw-2.1.3/rfftw/rfftwnd.c \
     fftw-2.1.3/rfftw/rgeneric.c \
     fftw-2.1.3/rfftw/rplanner.c \
-    fields.cpp
+    fields.cpp \
+    streamline.cpp
 
 HEADERS += \
     window.h \
@@ -163,7 +164,8 @@ HEADERS += \
     fftw-2.1.3/fftw/fftw-int.h \
     fftw-2.1.3/fftw/fftw.h \
     fftw-2.1.3/rfftw/rfftw.h \
-    fields.h
+    fields.h \
+    streamline.h
 
 INCLUDEPATH += $$PWD/fftw-2.1.3/fftw $$PWD/fftw-2.1.3/rfftw
 
