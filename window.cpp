@@ -106,3 +106,8 @@ void Window::on_HedgehogType_activated(const QString &arg1)
 {
     ui->myGLWidget->hedgehogType(arg1);
 }
+
+void Window::on_numberColors_valueChanged(int arg1)
+{
+    ui->myGLWidget->setNColors(arg1);
+}

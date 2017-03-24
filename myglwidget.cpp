@@ -20,6 +20,7 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     clamp_max = 1;
     clamp_min = 0;
     scalar_col = 0;           //method for scalar coloring
+    n_colors = 64;
     data_type = DATA_DENSITY;
     DIM = 50;
     simulation.init_simulation(DIM);
@@ -146,12 +147,12 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 {
                     max = scalar_draw->get_max();
                 }
-                set_colormap(scalar_draw->read(idx0),scalar_col, max, min);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx1),scalar_col, max, min);    glVertex2f(px1, py1);
-                set_colormap(scalar_draw->read(idx2),scalar_col, max, min);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx0),scalar_col, max, min);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx2),scalar_col, max, min);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx3),scalar_col, max, min);    glVertex2f(px3, py3);
+                set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx1),scalar_col, n_colors, max, min);    glVertex2f(px1, py1);
+                set_colormap(scalar_draw->read(idx2),scalar_col, n_colors, max, min);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx2),scalar_col, n_colors, max, min);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx3),scalar_col, n_colors, max, min);    glVertex2f(px3, py3);
 
             }
         }
@@ -290,6 +291,11 @@ void MyGLWidget::setClampMax(double new_clamp_max)
 void MyGLWidget::setClampMin(double new_clamp_min)
 {
     clamp_min = new_clamp_min;
+}
+
+void MyGLWidget::setNColors(int n)
+{
+    n_colors = n;
 }
 
 void MyGLWidget::changeData(QString new_hedgehog_type){

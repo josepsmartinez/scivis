@@ -51,6 +51,8 @@ private slots:
 
     void on_HedgehogType_activated(const QString &arg1);
 
+    void on_numberColors_valueChanged(int arg1);
+
 private:
     Ui::Window *ui;
 };

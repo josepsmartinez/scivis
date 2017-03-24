@@ -8,6 +8,54 @@ const int COLOR_BANDS=2;
 const int COLOR_RAINBOW2=3;
 const int COLOR_ARRAY=4;
 
+// COLOR CLASS
+Color::Color(float r, float g, float b)
+    : r(r), g(g), b(b)
+{
+    update_hsv();
+    s*=2;
+    load_hsv();
+}
+
+void Color::update_hsv()
+{
+    float M = max(r,max(g,b));
+    float m = min(r,min(g,b));
+    float d = M-m;
+
+    v = M;
+    s = (M>0.00001) ? d/M : 0;
+    if (s==0) h=0;
+    else{
+        if      (r==M)      h =     (g-b)/d;
+        else if (g==M)      h = 2 + (b-r)/d;
+        else                h = 4 + (r-g)/d;
+
+        h/=6;
+        if(h<0) h+=1;
+    }
+
+}
+
+void Color::load_hsv()
+{
+    int huec    = (int)(h*6);
+    float f     = 6*h - huec;
+    float lx    = v*(1-s);
+    float ly    = v*(1-s*f);
+    float lz    = v*(1-s*(1-f));
+
+    switch(huec){
+        case 0:
+        case 6: r=v;  g=lz; b=lx; break;
+        case 1: r=ly; g=v;  b=lx; break;
+        case 2: r=lx; g=v;  b=lz; break;
+        case 3: r=lx; g=ly; b=v;  break;
+        case 4: r=lz; g=lx; b=v;  break;
+        case 5: r=v;  g=lx; b=ly; break;
+    }
+}
+
 //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
 float max(float x, float y)
 { return x > y ? x : y; }
@@ -71,7 +119,7 @@ void color_array(float value,float* R,float* G,float* B,vector<Color> array) {
 
 
 //set_colormap: Sets three different types of colormaps
-void set_colormap(float value, int scalar_col, fftw_real max=1.f, fftw_real min=0.f)
+void set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f)
 {
     float R,G,B;
 
@@ -79,11 +127,14 @@ void set_colormap(float value, int scalar_col, fftw_real max=1.f, fftw_real min=
     value = (value - min)/(max - min);
     if(value>1.f) value=1.f; if(value<0.f) value=0.f;
 
+    // subsample according to n_colors
+    value = (1/(float)(n_colors-1))*(int) ((n_colors-1)*value);
+
     // do gremio
     vector<Color> carr;
-    carr.push_back({0, 0, 1}); // blue
-    carr.push_back({1, 1, 1}); // white
-    carr.push_back({0, 0, 0}); // black
+    carr.push_back(Color(1, 0, 0)); // blue
+    carr.push_back(Color(0, 1, 0)); // white
+    carr.push_back(Color(0, 0, 1)); // black
 
     if (scalar_col==COLOR_BLACKWHITE)
         R = G = B = value;

@@ -46,6 +46,8 @@ public slots:
     void setClampMax(double);
     void setClampMin(double);
 
+    void setNColors(int);
+
     void changeData(QString datatype);
 
     void timestep(int position);
@@ -78,6 +80,7 @@ private:
     int hedgehog_type;
     bool clamp;
     float clamp_max, clamp_min;
+    int n_colors;
     int data_type; // data used
     int   scalar_col;           //method for scalar coloring
     int DIM;
