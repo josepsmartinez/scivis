@@ -78,14 +78,14 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
     if (draw_vecs)
     {
-        fftw_real  wng = (fftw_real)winWidth / (fftw_real)(COL + 1);   // Grid cell width
-        fftw_real  hng = (fftw_real)winHeight / (fftw_real)(ROW + 1);  // Grid cell heigh
+        fftw_real  wng = ((fftw_real)winWidth -wn) / (fftw_real)(COL);   // Grid cell width
+        fftw_real  hng = ((fftw_real)winHeight -hn) / (fftw_real)(ROW);  // Grid cell heigh
 
         for (i = 0; i < COL; i++)
           for (j = 0; j < ROW; j++)
           {
-            int interpolated_j = (float)j*DIM/ROW +0.5 + jitter_j[i][j]; // closest neighbor
-            int interpolated_i = (float)i*DIM/COL +0.5 + jitter_i[i][j];
+            int interpolated_j = ((float)j+ jitter_j[i][j])*((float)DIM/(float)ROW) +0.5; // closest neighbor
+            int interpolated_i = ((float)i+ jitter_i[i][j])*((float)DIM/(float)COL) +0.5;
             idx = interpolated_j*DIM + interpolated_i; // normal grid
             if(clamp)
             {
@@ -110,14 +110,14 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
             }
             if(hedgehog_type == HEDGEHOG_CONE)
             {
-                drawCone(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn, colr);
+                drawCone(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn, colr);
             }
             else if(hedgehog_type == HEDGEHOG_ARROW)
             {
-                drawArrow(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn);
+                drawArrow(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn);
             }else if(hedgehog_type == HEDGEHOG_LINE)
             {
-                drawLine(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn);
+                drawLine(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn);
             }
           }
     }
@@ -490,6 +490,12 @@ void MyGLWidget::hedgehogVector(int new_h_vector){
     }else if(hedgehog_vector == DATA_FORCEFIELD)
     {
         vectorial_draw = simulation.get_f();
+    }else if(hedgehog_vector == DATA_GRADIENT_DENSITY)
+    {
+        vectorial_draw = simulation.get_rho()->get_gradient();
+    }else if(hedgehog_vector == DATA_GRADIENT_VELOCITY)
+    {
+        vectorial_draw = simulation.get_v()->get_gradient();
     }
 }
 
@@ -519,7 +525,7 @@ void MyGLWidget::update_jitter_matrix()
     for(int i = 0; i < COL; i++)
         for(int j = 0; j < ROW; j++)
         {
-            jitter_i[i][j] = randomness* ((wng*((rand()%100) - 50))/100.0);
-            jitter_j[i][j] = randomness* ((hng*((rand()%100) - 50))/100.0);
+            jitter_i[i][j] = randomness* (((rand()%100) - 50)/100.0);
+            jitter_j[i][j] = randomness* (((rand()%100) - 50)/100.0);
         }
 }

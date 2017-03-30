@@ -629,7 +629,7 @@
                <rect>
                 <x>10</x>
                 <y>20</y>
-                <width>101</width>
+                <width>110</width>
                 <height>101</height>
                </rect>
               </property>
@@ -648,6 +648,26 @@
                 <widget class="QRadioButton" name="radio_hedv_forcefield">
                  <property name="text">
                   <string>Forcefield</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_hedv_grad_den">
+                 <property name="text">
+                  <string>Gradient Density</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_hedv_grad_vel">
+                 <property name="text">
+                  <string>Gradient Velocity</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>

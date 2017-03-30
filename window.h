@@ -73,6 +73,10 @@ private slots:
 
     void on_horizontalSlider_valueChanged(int value);
 
+    void on_radio_hedv_grad_den_clicked();
+
+    void on_radio_hedv_grad_vel_clicked();
+
 public:
     Ui::Window *ui;
 };

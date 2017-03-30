@@ -161,7 +161,7 @@ void Window::update_color_legend()
     for(int j = 0; j< legend.height(); j++)
     {
         QColor color(ui->myGLWidget->color_legend(j,399,0));
-        legend.setPixel(0,j,color.rgba());
+        legend.setPixel(0,399-j,color.rgba());
     }
 
     QPixmap pix = QPixmap::fromImage(legend);
@@ -183,4 +183,14 @@ void Window::on_Row_hed_valueChanged(int arg1)
 void Window::on_horizontalSlider_valueChanged(int value)
 {
     ui->myGLWidget->setRandomness(value);
+}
+
+void Window::on_radio_hedv_grad_den_clicked()
+{
+    ui->myGLWidget->hedgehogVector(DATA_GRADIENT_DENSITY);
+}
+
+void Window::on_radio_hedv_grad_vel_clicked()
+{
+    ui->myGLWidget->hedgehogVector(DATA_GRADIENT_VELOCITY);
 }
