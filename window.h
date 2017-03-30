@@ -67,6 +67,12 @@ private slots:
     void update_color_legend();
     void update_color_legend_vals();
 
+    void on_Col_hed_valueChanged(int arg1);
+
+    void on_Row_hed_valueChanged(int arg1);
+
+    void on_horizontalSlider_valueChanged(int value);
+
 public:
     Ui::Window *ui;
 };

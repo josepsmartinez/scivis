@@ -25,11 +25,19 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     clamp_max = 1;
     max = 1;
     min = 0;
+    randomness = 0;
     clamp_min = 0;
     scalar_col = 0;           //method for scalar coloring
     n_colors = 64;
     data_type = DATA_DENSITY;
     DIM = 50;
+    ROW = COL = 50;
+    jitter_i.resize(DIM);
+    jitter_j.resize(DIM);
+    for (int i = 0; i < DIM; ++i){
+        jitter_i[i].resize(DIM);
+        jitter_j[i].resize(DIM);
+    }
     simulation.init_simulation(DIM);
     QTimer *timer = new QTimer;
     timer->start(1);
@@ -70,67 +78,48 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
     if (draw_vecs)
     {
-        if(hedgehog_type == HEDGEHOG_LINE)
-        {
-            glBegin(GL_LINES);				//draw velocities
+        fftw_real  wng = (fftw_real)winWidth / (fftw_real)(COL + 1);   // Grid cell width
+        fftw_real  hng = (fftw_real)winHeight / (fftw_real)(ROW + 1);  // Grid cell heigh
 
+        for (i = 0; i < COL; i++)
+          for (j = 0; j < ROW; j++)
+          {
+            int interpolated_j = (float)j*DIM/ROW +0.5 + jitter_j[i][j]; // closest neighbor
+            int interpolated_i = (float)i*DIM/COL +0.5 + jitter_i[i][j];
+            idx = interpolated_j*DIM + interpolated_i; // normal grid
+            if(clamp)
+            {
+                min = clamp_min;
+                max = clamp_max;
+            }else
+            {
+                max = scalar_draw_hedgehog->get_max();
+                min = 0;
+            }
+            set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
+            fftw_real x = vec_scale * vectorial_draw->read_x(idx);
+            fftw_real y = vec_scale * vectorial_draw->read_y(idx);
+            float angle=0;
+            float lenght = sqrt(x*x + y*y);
+            if(lenght != 0)
+            {
+                x = x/lenght; // normalize
+                y = y/lenght;
 
-            for (i = 0; i < DIM; i++)
-              for (j = 0; j < DIM; j++)
-              {
-                idx = (j * DIM) + i; // normal grid
-                if(clamp)
-                {
-                    min = clamp_min;
-                    max = clamp_max;
-                }else
-                {
-                    max = scalar_draw_hedgehog->get_max();
-                }
-                set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
-                glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-                glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vectorial_draw->read_x(idx),
-                           (hn + (fftw_real)j * hn) + vec_scale * vectorial_draw->read_y(idx));
-              }
-            glEnd();
-        }else
-        {
-            for (i = 0; i < DIM; i++)
-              for (j = 0; j < DIM; j++)
-              {
-                idx = (j * DIM) + i; // normal grid
-                float max,min =0;
-                if(clamp)
-                {
-                    min = clamp_min;
-                    max = clamp_max;
-                }else
-                {
-                    max = scalar_draw_hedgehog->get_max();
-                    min = 0;
-                }
-                set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
-                fftw_real x = vec_scale * vectorial_draw->read_x(idx);
-                fftw_real y = vec_scale * vectorial_draw->read_y(idx);
-                float angle=0;
-                float lenght = sqrt(x*x + y*y);
-                if(lenght != 0)
-                {
-                    x = x/lenght; // normalize
-                    y = y/lenght;
-
-                    angle = atan2 (-x,y) * (180 / M_PI);
-                }
-                if(hedgehog_type == HEDGEHOG_CONE)
-                {
-                    drawCone(angle,lenght,i*wn,j*hn,10,wn,hn);
-                }
-                else if(hedgehog_type == HEDGEHOG_ARROW)
-                {
-                    drawArrow(angle,lenght,i*wn,j*hn,10,wn,hn);
-                }
-              }
-        }
+                angle = atan2 (-x,y) * (180 / M_PI);
+            }
+            if(hedgehog_type == HEDGEHOG_CONE)
+            {
+                drawCone(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn);
+            }
+            else if(hedgehog_type == HEDGEHOG_ARROW)
+            {
+                drawArrow(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn);
+            }else if(hedgehog_type == HEDGEHOG_LINE)
+            {
+                drawLine(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn);
+            }
+          }
     }
     if (draw_smoke)
     {
@@ -174,6 +163,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                     max = scalar_draw->get_max();
                     min = 0;
                 }
+
                 set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min);    glVertex2f(px0, py0);
                 set_colormap(scalar_draw->read(idx1),scalar_col, n_colors, max, min);    glVertex2f(px1, py1);
                 set_colormap(scalar_draw->read(idx2),scalar_col, n_colors, max, min);    glVertex2f(px2, py2);
@@ -203,11 +193,26 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
         //clamp_min->value();
         //scalar_draw->reset_limits();
     }
-
     glFlush();
-    scalar_draw->reset_limits();
-    scalar_draw_hedgehog->reset_limits();
 }
+
+void MyGLWidget::drawLine(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn)
+{
+    glPushMatrix();
+    glTranslatef(x_coord,y_coord, 0);
+    glScaled(wn,hn,0);
+    glRotated(angle,0,0,1);
+    glScaled(log(lenght/scaling_factor+1),log(lenght/(scaling_factor/2)+1),0);
+    glBegin(GL_LINES);
+
+    glVertex2f(0, 0);
+    glVertex2f(0, 1);
+
+    glEnd();
+    glPopMatrix(); // now it's at normal scale again
+    glLoadIdentity(); // needed to stop the rotating, otherwise rotates the entire drawing
+}
+
 void MyGLWidget::drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn)
 {
     glPushMatrix();
@@ -290,6 +295,8 @@ void MyGLWidget::do_one_simulation_step(bool update)
 {
     if (!simulation.get_frozen())
     {
+        scalar_draw->reset_limits();
+        scalar_draw_hedgehog->reset_limits();
         simulation.set_forces(DIM);
         simulation.solve(DIM);
         simulation.diffuse_matter(DIM);
@@ -341,6 +348,24 @@ void MyGLWidget::setNColors(int n)
     n_colors = n;
 }
 
+void MyGLWidget::setROW(int n)
+{
+    ROW = n;
+    update_jitter_matrix();
+}
+
+void MyGLWidget::setCOL(int n)
+{
+    COL = n;
+    update_jitter_matrix();
+}
+
+void MyGLWidget::setRandomness(int r)
+{
+    randomness = (float)r/100.0;
+    update_jitter_matrix();
+}
+
 void MyGLWidget::changeData(QString new_hedgehog_type){
     if (new_hedgehog_type == "Density") {
        data_type = DATA_DENSITY;
@@ -353,6 +378,15 @@ void MyGLWidget::changeData(QString new_hedgehog_type){
     else if (new_hedgehog_type == "Forcefield") {
        data_type = DATA_FORCEFIELD;
        scalar_draw = (Field*) simulation.get_f();
+    }
+    if(clamp)
+    {
+        min = clamp_min;
+        max = clamp_max;
+    }else
+    {
+        max = scalar_draw->get_max();
+        min = 0;
     }
 }
 
@@ -440,6 +474,15 @@ void MyGLWidget::hedgehogScalar(int new_h_scalar){
     {
         scalar_draw_hedgehog = simulation.get_f();
     }
+    if(clamp)
+    {
+        min = clamp_min;
+        max = clamp_max;
+    }else
+    {
+        max = scalar_draw_hedgehog->get_max();
+        min = 0;
+    }
 }
 
 void MyGLWidget::hedgehogVector(int new_h_vector){
@@ -466,3 +509,20 @@ QColor MyGLWidget::color_legend(float value, fftw_real max=1.f, fftw_real min=0.
     return set_colormap(value, scalar_col, n_colors, max, min,true);
 }
 
+void MyGLWidget::update_jitter_matrix()
+{
+    fftw_real  wng = (fftw_real)winWidth / (fftw_real)(COL + 1);   // Grid cell width
+    fftw_real  hng = (fftw_real)winHeight / (fftw_real)(ROW + 1);  // Grid cell heigh
+    jitter_i.resize(COL);
+    jitter_j.resize(COL);
+    for (int i = 0; i < COL; ++i){
+        jitter_i[i].resize(ROW);
+        jitter_j[i].resize(ROW);
+    }
+    for(int i = 0; i < COL; i++)
+        for(int j = 0; j < ROW; j++)
+        {
+            jitter_i[i][j] = randomness* ((wng*((rand()%100) - 50))/100.0);
+            jitter_j[i][j] = randomness* ((hng*((rand()%100) - 50))/100.0);
+        }
+}

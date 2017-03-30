@@ -52,6 +52,11 @@ public slots:
 
     void setNColors(int);
 
+    void setROW(int);
+    void setCOL(int);
+
+    void setRandomness(int);
+
     void changeData(QString datatype);
 
     void timestep(int position);
@@ -59,6 +64,8 @@ public slots:
     void hedgehogScaling(int position);
 
     void fluidViscosity(int position);
+
+    void drawLine(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
 
     void drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
 
@@ -68,6 +75,8 @@ public slots:
 
     float get_max();
     float get_min();
+
+    void update_jitter_matrix();
 
 
 protected:
@@ -96,6 +105,11 @@ private:
     int data_type; // data used
     int   scalar_col;           //method for scalar coloring
     int DIM;
+    int ROW;
+    int COL;
+    float randomness;
+    std::vector<std::vector<float>> jitter_j;
+    std::vector<std::vector<float>> jitter_i;
     Simulation simulation;
     fftw_real  cell_width;
     fftw_real  cell_height;

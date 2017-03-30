@@ -14,8 +14,6 @@ void Field::initialize(int N, int DIM)
     field = (fftw_real*)malloc(sizeof(fftw_real) * N);
     for(int i=0; i<N; i++)
         field[i] = 0.f;
-
-    reset_limits();
 }
 
 

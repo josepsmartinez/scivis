@@ -169,3 +169,18 @@ void Window::update_color_legend()
     int h = ui->legend->height();
     ui->legend->setPixmap(pix.scaled(w,h));
 }
+
+void Window::on_Col_hed_valueChanged(int arg1)
+{
+    ui->myGLWidget->setCOL(arg1);
+}
+
+void Window::on_Row_hed_valueChanged(int arg1)
+{
+    ui->myGLWidget->setROW(arg1);
+}
+
+void Window::on_horizontalSlider_valueChanged(int value)
+{
+    ui->myGLWidget->setRandomness(value);
+}
