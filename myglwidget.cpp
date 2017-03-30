@@ -19,8 +19,12 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     draw_smoke = true;           //draw the smoke or not
     draw_vecs = true;            //draw the vector field or not
     hedgehog_type = HEDGEHOG_LINE;
+    hedgehog_scalar = DATA_DENSITY;
+    hedgehog_vector = DATA_VELOCITY;
     clamp = false;
     clamp_max = 1;
+    max = 1;
+    min = 0;
     clamp_min = 0;
     scalar_col = 0;           //method for scalar coloring
     n_colors = 64;
@@ -32,7 +36,8 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     QObject::connect(timer,SIGNAL(timeout()),this,SLOT(do_one_simulation_step()));
 
     scalar_draw = simulation.get_rho();
-    vectorial_draw = (simulation.get_v()->get_gradient());
+    scalar_draw_hedgehog = simulation.get_rho();
+    vectorial_draw = simulation.get_v();
 
 }
 
@@ -74,7 +79,15 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
               for (j = 0; j < DIM; j++)
               {
                 idx = (j * DIM) + i; // normal grid
-                direction_to_color(vectorial_draw->read_x(idx),vectorial_draw->read_y(idx),color_dir);
+                if(clamp)
+                {
+                    min = clamp_min;
+                    max = clamp_max;
+                }else
+                {
+                    max = scalar_draw_hedgehog->get_max();
+                }
+                set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
                 glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
                 glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vectorial_draw->read_x(idx),
                            (hn + (fftw_real)j * hn) + vec_scale * vectorial_draw->read_y(idx));
@@ -86,7 +99,17 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
               for (j = 0; j < DIM; j++)
               {
                 idx = (j * DIM) + i; // normal grid
-                direction_to_color(vectorial_draw->read_x(idx),vectorial_draw->read_y(idx),color_dir);
+                float max,min =0;
+                if(clamp)
+                {
+                    min = clamp_min;
+                    max = clamp_max;
+                }else
+                {
+                    max = scalar_draw_hedgehog->get_max();
+                    min = 0;
+                }
+                set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
                 fftw_real x = vec_scale * vectorial_draw->read_x(idx);
                 fftw_real y = vec_scale * vectorial_draw->read_y(idx);
                 float angle=0;
@@ -95,6 +118,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 {
                     x = x/lenght; // normalize
                     y = y/lenght;
+
                     angle = atan2 (-x,y) * (180 / M_PI);
                 }
                 if(hedgehog_type == HEDGEHOG_CONE)
@@ -141,7 +165,6 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 idx3 = (j * DIM) + (i + 1);
                 //idx3 = scalar_draw->index1d(i+1, j);
 
-                float max,min =0;
                 if(clamp)
                 {
                     min = clamp_min;
@@ -149,6 +172,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 }else
                 {
                     max = scalar_draw->get_max();
+                    min = 0;
                 }
                 set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min);    glVertex2f(px0, py0);
                 set_colormap(scalar_draw->read(idx1),scalar_col, n_colors, max, min);    glVertex2f(px1, py1);
@@ -181,6 +205,8 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     }
 
     glFlush();
+    scalar_draw->reset_limits();
+    scalar_draw_hedgehog->reset_limits();
 }
 void MyGLWidget::drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn)
 {
@@ -256,8 +282,8 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int mx = event->x();
     int my = event->y();
-    //simulation.drag(mx,my, DIM, winWidth/2, winHeight/2); // jean
-    simulation.drag(mx,my, DIM, winWidth, winHeight); // terrordoclash
+    simulation.drag(mx,my, DIM, winWidth/2, winHeight/2); // jean
+    //simulation.drag(mx,my, DIM, winWidth, winHeight); // terrordoclash
 }
 
 void MyGLWidget::do_one_simulation_step(bool update)
@@ -401,3 +427,42 @@ void MyGLWidget::hedgehogType(QString new_hedgehog_type){
        hedgehog_type = HEDGEHOG_ARROW;
     }
 }
+
+void MyGLWidget::hedgehogScalar(int new_h_scalar){
+    hedgehog_scalar = new_h_scalar;
+    if(hedgehog_scalar == DATA_DENSITY)
+    {
+        scalar_draw_hedgehog = simulation.get_rho();
+    }else if(hedgehog_scalar == DATA_VELOCITY)
+    {
+        scalar_draw_hedgehog = simulation.get_v();
+    }else if(hedgehog_scalar == DATA_FORCEFIELD)
+    {
+        scalar_draw_hedgehog = simulation.get_f();
+    }
+}
+
+void MyGLWidget::hedgehogVector(int new_h_vector){
+    hedgehog_vector = new_h_vector;
+    if(hedgehog_vector == DATA_VELOCITY)
+    {
+        vectorial_draw = simulation.get_v();
+    }else if(hedgehog_vector == DATA_FORCEFIELD)
+    {
+        vectorial_draw = simulation.get_f();
+    }
+}
+
+float MyGLWidget::get_max()
+{
+    return max;
+}
+float MyGLWidget::get_min()
+{
+    return min;
+}
+
+QColor MyGLWidget::color_legend(float value, fftw_real max=1.f, fftw_real min=0.f){
+    return set_colormap(value, scalar_col, n_colors, max, min,true);
+}
+

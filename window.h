@@ -14,6 +14,7 @@ class Window : public QWidget
 {
     Q_OBJECT
 
+
 public:
     explicit Window(QWidget *parent = 0);
     ~Window();
@@ -51,7 +52,20 @@ private slots:
 
     void on_HedgehogType_activated(const QString &arg1);
 
-    void on_numberColors_valueChanged(int arg1);
+    void on_numberColors_valueChanged(int arg1);   
+
+    void on_radio_hedv_velocity_clicked();
+
+    void on_radio_hedv_forcefield_clicked();
+
+    void on_radio_hed_density_clicked();
+
+    void on_radio_hed_velocity_clicked();
+
+    void on_radio_hed_forcefield_clicked();
+
+    void update_color_legend();
+    void update_color_legend_vals();
 
 public:
     Ui::Window *ui;

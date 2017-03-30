@@ -41,6 +41,10 @@ public slots:
 
     void hedgehogType(QString new_hedgehog_type);
 
+    void hedgehogScalar(int new_h_scalar);
+
+    void hedgehogVector(int new_h_vector);
+
     void setClamp(bool new_clamp);
 
     void setClampMax(double);
@@ -60,6 +64,11 @@ public slots:
 
     void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
 
+    QColor color_legend(float value, fftw_real max, fftw_real min);
+
+    float get_max();
+    float get_min();
+
 
 protected:
     void initializeGL();
@@ -78,8 +87,11 @@ private:
     bool   draw_smoke;           //draw the smoke or not
     bool   draw_vecs;            //draw the vector field or not
     int hedgehog_type;
+    int hedgehog_scalar;
+    int hedgehog_vector;
     bool clamp;
     float clamp_max, clamp_min;
+    float max,min;
     int n_colors;
     int data_type; // data used
     int   scalar_col;           //method for scalar coloring
@@ -89,6 +101,7 @@ private:
     fftw_real  cell_height;
 
     Field* scalar_draw;
+    Field* scalar_draw_hedgehog;
     vectorialField* vectorial_draw;
 };
 
