@@ -69,7 +69,7 @@ public slots:
 
     void drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
 
-    void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
+    void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn, QColor color);
 
     QColor color_legend(float value, fftw_real max, fftw_real min);
 

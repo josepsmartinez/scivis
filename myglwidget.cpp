@@ -96,7 +96,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 max = scalar_draw_hedgehog->get_max();
                 min = 0;
             }
-            set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
+            QColor colr = set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
             fftw_real x = vec_scale * vectorial_draw->read_x(idx);
             fftw_real y = vec_scale * vectorial_draw->read_y(idx);
             float angle=0;
@@ -110,7 +110,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
             }
             if(hedgehog_type == HEDGEHOG_CONE)
             {
-                drawCone(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn);
+                drawCone(angle,lenght,wng+i*wng + jitter_i[i][j],hng+j*hng + jitter_j[i][j],10,wn,hn, colr);
             }
             else if(hedgehog_type == HEDGEHOG_ARROW)
             {
@@ -243,32 +243,29 @@ void MyGLWidget::drawArrow(float angle, float lenght, int x_coord, int y_coord, 
     glLoadIdentity(); // needed to stop the rotating, otherwise rotates the entire drawing
 }
 
-void MyGLWidget::drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn)
+void MyGLWidget::drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn, QColor color)
 {
     glPushMatrix();
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    GLfloat lightpos[] = {100., 100., 0., 0.};
+    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+
     glTranslatef(x_coord,y_coord, 0);
     glScaled(wn,hn,0);
     glRotated(angle,0,0,1);
     glScaled(log(lenght/scaling_factor+1),log(lenght/(scaling_factor/2)+1),0);
+    glRotated(-90,1,0,0);
+    glRotated(45.,0,0,1);
 
-    // draw the upper part of the cone
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex3f(0, 0, 0);
-    // Smooth shading
+    GLfloat col[] = {color.redF(), color.greenF(), color.blueF(), 1.f};
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, col);
+    GLUquadricObj *quadObj = gluNewQuadric();
+    gluCylinder(quadObj, 0.3, 0, 1, 5, 5);
 
-    glShadeModel(GL_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    //glEnable (GL_LIGHTING);
-    float radius = 1/3; // calculate radius
-    // foreach degree angle draw circle + arrow point
-    for (int angle = 1; angle <= 360; angle+=10) {
-        glColor4f(0.5,0.5,0.5,0.5-(0.5/angle)); // colors(R, G, B, alpha)
-        glVertex2f(1.0/2, 1); // draw cone point/tip
-        glVertex2f(sin(angle) * radius, cos(angle) * radius); // draw cone base (circle)
-    }
-
-
-    glEnd();
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
     glPopMatrix(); // now it's at normal scale again
     glLoadIdentity(); // needed to stop the rotating, otherwise rotates the entire drawing
 }

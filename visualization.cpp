@@ -153,7 +153,7 @@ QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f
 
     if(legend) return QColor(255*R,255*G,255*B);
     else{ glColor3f(R,G,B);
-        return QColor(1,1,1);}
+        return QColor(255*R,255*G,255*B);}
 
 }
 
