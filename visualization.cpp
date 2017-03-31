@@ -13,7 +13,7 @@ Color::Color(float r, float g, float b)
     : r(r), g(g), b(b)
 {
     update_hsv();
-    s*=2;
+    //s*=2;
     load_hsv();
 }
 
@@ -99,14 +99,17 @@ void color_array(float value,float* R,float* G,float* B,vector<Color> array) {
     int n = array.size(); // number of colors
     float dx = 1 / ((float)n-1); // interval of each interpolation
 
-    //if (value<0) value=0; if (value>1) value=1.f;
+    if (value<0) value=0; if (value>1) value=1.f;
     int c_index = 0;
 
-    while(value > dx) { // finds interpolation interval and its parameter
+    bool debugris = value > 0.5f;
+    float o_value = value;
+
+    while(value >= dx) { // finds interpolation interval and its parameter
         c_index++;
         value -= dx;
     }
-    value /= dx; // normalizes interpolation parameter
+    value *= n-1;
 
     Color c = array[c_index];
     Color c_next = array[c_index+1];
@@ -115,8 +118,19 @@ void color_array(float value,float* R,float* G,float* B,vector<Color> array) {
     *G = (1 - value)*c.g + value*c_next.g;
     *B = (1 - value)*c.b + value*c_next.b;
 
+    if (debugris) {
+        //printf("%f %f %f %f %f %f \n", c.r, c_next.r, c.g, c_next.g, c.b, c_next.b);
+        //printf("%f %f %f %d %f %f \n", o_value, value, dx, c_index, c.g, c_next.g);
+    }
+
 }
 
+void ncolors_subsample(float* value, int n_colors) { // by reference
+    *value = (1/(float)(n_colors)) *
+            min((int) ((n_colors) * *value), n_colors-1); // min maps value=1 to the second "higher" color
+            // (int) ((n_colors) * *value); // distinguishes peaks (value=1) with the highest color
+    // reasoning only useful at a small number of colors
+}
 
 //set_colormap: Sets three different types of colormaps
 QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f, bool legend=false)
@@ -128,13 +142,14 @@ QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f
     if(value>1.f) value=1.f; if(value<0.f) value=0.f;
 
     // subsample according to n_colors
-    value = (1/(float)(n_colors-1))*(int) ((n_colors-1)*value);
+    ncolors_subsample(&value, n_colors);
 
     // do gremio
     vector<Color> carr;
-    carr.push_back(Color(1, 0, 0)); // blue
-    carr.push_back(Color(0, 1, 0)); // white
-    carr.push_back(Color(0, 0, 1)); // black
+    carr.push_back(Color(1.f, 0.f, 0.f)); // blue
+    carr.push_back(Color(0.f, 1.f, 0.f)); // white
+    carr.push_back(Color(0.f, 0.f, 1.f)); // black
+
 
     if (scalar_col==COLOR_BLACKWHITE)
         R = G = B = value;
