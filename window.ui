@@ -38,25 +38,6 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <item row="1" column="0">
-    <widget class="MyGLWidget" name="myGLWidget" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>400</width>
-       <height>400</height>
-      </size>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="mouseTracking">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -108,7 +89,7 @@
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>1000</number>
+         <number>5000</number>
         </property>
         <property name="value">
          <number>500</number>
@@ -247,336 +228,646 @@
          <string>Data drawn</string>
         </property>
        </widget>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>0</y>
+          <width>435</width>
+          <height>150</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>150</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>150</height>
+         </size>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="Colormap">
+         <attribute name="title">
+          <string>Colormap</string>
+         </attribute>
+         <widget class="QLabel" name="label_1">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>100</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Colormap</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="scalarColoring">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>115</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>black&amp;white</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>color array</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>rainbow2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>rainbow</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QRadioButton" name="scale">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>60</y>
+            <width>85</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Scale</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="clamp">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>90</y>
+            <width>85</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Clamp</string>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="clamp_min">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>60</y>
+            <width>62</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="clamp_max">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>90</y>
+            <width>62</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.500000000000000</double>
+          </property>
+          <property name="value">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_5">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>60</y>
+            <width>21</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>min</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_6">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>90</y>
+            <width>21</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>max</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="numberColors">
+          <property name="geometry">
+           <rect>
+            <x>350</x>
+            <y>20</y>
+            <width>43</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>2</number>
+          </property>
+          <property name="maximum">
+           <number>256</number>
+          </property>
+          <property name="value">
+           <number>64</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_7">
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>20</y>
+            <width>100</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of Colors</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_8">
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>50</y>
+            <width>100</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Hue</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_9">
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>80</y>
+            <width>100</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Saturation</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="huevalue">
+          <property name="geometry">
+           <rect>
+            <x>350</x>
+            <y>50</y>
+            <width>43</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>360</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="saturationvalue">
+          <property name="geometry">
+           <rect>
+            <x>350</x>
+            <y>80</y>
+            <width>43</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="Hedgehog">
+         <attribute name="title">
+          <string>Hedgehog</string>
+         </attribute>
+         <widget class="QLabel" name="label_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>99</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Hedgehog scaling</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="hedgehogScalingSlider">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>181</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;hedgehogscaling&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>2000</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="hedgehogColorDir">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>40</y>
+            <width>121</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Hedgehog color</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="HedgehogType">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>40</y>
+            <width>81</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>Lines</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Arrows</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cones</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_2">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>-1</y>
+            <width>241</width>
+            <height>121</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Scalar</string>
+             </property>
+             <widget class="QWidget" name="verticalLayoutWidget">
+              <property name="geometry">
+               <rect>
+                <x>6</x>
+                <y>20</y>
+                <width>111</width>
+                <height>101</height>
+               </rect>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout">
+               <item>
+                <widget class="QRadioButton" name="radio_hed_density">
+                 <property name="text">
+                  <string>Density</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_hed_velocity">
+                 <property name="text">
+                  <string>Velocity</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_hed_forcefield">
+                 <property name="text">
+                  <string>Forcefield</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Vector</string>
+             </property>
+             <widget class="QWidget" name="verticalLayoutWidget_2">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>20</y>
+                <width>110</width>
+                <height>101</height>
+               </rect>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QRadioButton" name="radio_hedv_velocity">
+                 <property name="text">
+                  <string>Velocity</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_hedv_forcefield">
+                 <property name="text">
+                  <string>Forcefield</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_hedv_grad_den">
+                 <property name="text">
+                  <string>Gradient Density</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_hedv_grad_vel">
+                 <property name="text">
+                  <string>Gradient Velocity</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QSpinBox" name="Col_hed">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>70</y>
+            <width>43</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>50</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="Row_hed">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>100</y>
+            <width>43</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>50</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_10">
+          <property name="geometry">
+           <rect>
+            <x>78</x>
+            <y>70</y>
+            <width>61</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Columns</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_11">
+          <property name="geometry">
+           <rect>
+            <x>78</x>
+            <y>100</y>
+            <width>61</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rows</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="horizontalSlider">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>100</y>
+            <width>71</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_12">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>70</y>
+            <width>71</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Randomness</string>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="MyGLWidget" name="myGLWidget" native="true">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>400</width>
+         <height>400</height>
+        </size>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>150</height>
-        </size>
-       </property>
+      <widget class="QLabel" name="legend">
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
-         <height>150</height>
+         <width>20</width>
+         <height>16777215</height>
         </size>
        </property>
-       <property name="currentIndex">
-        <number>0</number>
+       <property name="text">
+        <string/>
        </property>
-       <widget class="QWidget" name="Colormap">
-        <attribute name="title">
-         <string>Colormap</string>
-        </attribute>
-        <widget class="QLabel" name="label_1">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>100</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Colormap</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="scalarColoring">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>20</y>
-           <width>115</width>
-           <height>26</height>
-          </rect>
-         </property>
-         <item>
-          <property name="text">
-           <string>black&amp;white</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>color array</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>rainbow2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>rainbow</string>
-          </property>
-         </item>
-        </widget>
-        <widget class="QRadioButton" name="scale">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>60</y>
-           <width>85</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Scale</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="clamp">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>90</y>
-           <width>85</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Clamp</string>
-         </property>
-        </widget>
-        <widget class="QDoubleSpinBox" name="clamp_min">
-         <property name="geometry">
-          <rect>
-           <x>120</x>
-           <y>60</y>
-           <width>62</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-        <widget class="QDoubleSpinBox" name="clamp_max">
-         <property name="geometry">
-          <rect>
-           <x>120</x>
-           <y>90</y>
-           <width>62</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <property name="maximum">
-          <double>10.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.500000000000000</double>
-         </property>
-         <property name="value">
-          <double>1.000000000000000</double>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_5">
-         <property name="geometry">
-          <rect>
-           <x>100</x>
-           <y>60</y>
-           <width>21</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>min</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_6">
-         <property name="geometry">
-          <rect>
-           <x>100</x>
-           <y>90</y>
-           <width>21</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>max</string>
-         </property>
-        </widget>
-        <widget class="QSpinBox" name="numberColors">
-         <property name="geometry">
-          <rect>
-           <x>350</x>
-           <y>20</y>
-           <width>43</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <property name="minimum">
-          <number>2</number>
-         </property>
-         <property name="maximum">
-          <number>256</number>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_7">
-         <property name="geometry">
-          <rect>
-           <x>230</x>
-           <y>20</y>
-           <width>100</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Number of Colors</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_8">
-         <property name="geometry">
-          <rect>
-           <x>230</x>
-           <y>50</y>
-           <width>100</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Hue</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_9">
-         <property name="geometry">
-          <rect>
-           <x>230</x>
-           <y>80</y>
-           <width>100</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Saturation</string>
-         </property>
-        </widget>
-        <widget class="QSpinBox" name="huevalue">
-         <property name="geometry">
-          <rect>
-           <x>350</x>
-           <y>50</y>
-           <width>43</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <property name="minimum">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <number>360</number>
-         </property>
-         <property name="value">
-          <number>0</number>
-         </property>
-        </widget>
-        <widget class="QSpinBox" name="saturationvalue">
-         <property name="geometry">
-          <rect>
-           <x>350</x>
-           <y>80</y>
-           <width>43</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <property name="minimum">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-         <property name="value">
-          <number>50</number>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="Hedgehog">
-        <attribute name="title">
-         <string>Hedgehog</string>
-        </attribute>
-        <widget class="QLabel" name="label_3">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>99</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Hedgehog scaling</string>
-         </property>
-        </widget>
-        <widget class="QSlider" name="hedgehogScalingSlider">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>20</y>
-           <width>181</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;hedgehogscaling&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>2000</number>
-         </property>
-         <property name="value">
-          <number>500</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-        <widget class="QCheckBox" name="hedgehogColorDir">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>40</y>
-           <width>121</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Hedgehog color</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="HedgehogType">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>80</y>
-           <width>115</width>
-           <height>26</height>
-          </rect>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_2">
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>51</width>
+          <height>396</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
          </property>
          <item>
-          <property name="text">
-           <string>Lines</string>
-          </property>
+          <widget class="QLabel" name="max_legend">
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>Arrows</string>
-          </property>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item>
-          <property name="text">
-           <string>Cones</string>
-          </property>
+          <widget class="QLabel" name="min_legend">
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
          </item>
-        </widget>
+        </layout>
        </widget>
       </widget>
      </item>

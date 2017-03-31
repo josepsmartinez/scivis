@@ -12,6 +12,8 @@
 const int DATA_DENSITY=0;   //possible data types
 const int DATA_VELOCITY=1;
 const int DATA_FORCEFIELD=2;
+const int DATA_GRADIENT_DENSITY=3;
+const int DATA_GRADIENT_VELOCITY=4;
 
 const int HEDGEHOG_LINE=0;   //possible hedgehog types
 const int HEDGEHOG_CONE=1;
@@ -41,12 +43,21 @@ public slots:
 
     void hedgehogType(QString new_hedgehog_type);
 
+    void hedgehogScalar(int new_h_scalar);
+
+    void hedgehogVector(int new_h_vector);
+
     void setClamp(bool new_clamp);
 
     void setClampMax(double);
     void setClampMin(double);
 
     void setNColors(int);
+
+    void setROW(int);
+    void setCOL(int);
+
+    void setRandomness(int);
 
     void changeData(QString datatype);
 
@@ -56,9 +67,18 @@ public slots:
 
     void fluidViscosity(int position);
 
+    void drawLine(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
+
     void drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
 
-    void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
+    void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn, QColor color);
+
+    QColor color_legend(float value, fftw_real max, fftw_real min);
+
+    float get_max();
+    float get_min();
+
+    void update_jitter_matrix();
 
 
 protected:
@@ -78,17 +98,26 @@ private:
     bool   draw_smoke;           //draw the smoke or not
     bool   draw_vecs;            //draw the vector field or not
     int hedgehog_type;
+    int hedgehog_scalar;
+    int hedgehog_vector;
     bool clamp;
     float clamp_max, clamp_min;
+    float max,min;
     int n_colors;
     int data_type; // data used
     int   scalar_col;           //method for scalar coloring
     int DIM;
+    int ROW;
+    int COL;
+    float randomness;
+    std::vector<std::vector<float>> jitter_j;
+    std::vector<std::vector<float>> jitter_i;
     Simulation simulation;
     fftw_real  cell_width;
     fftw_real  cell_height;
 
     Field* scalar_draw;
+    Field* scalar_draw_hedgehog;
     vectorialField* vectorial_draw;
 };
 

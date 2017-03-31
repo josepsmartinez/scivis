@@ -119,9 +119,9 @@ void color_array(float value,float* R,float* G,float* B,vector<Color> array) {
 
 
 //set_colormap: Sets three different types of colormaps
-void set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f)
+QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f, bool legend=false)
 {
-    float R,G,B;
+    float R =0,G=0,B=0;
 
     // normalizes value
     value = (value - min)/(max - min);
@@ -151,7 +151,13 @@ void set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, 
        rainbow(value,&R,&G,&B);
     }
 
-    glColor3f(R,G,B);
+    if(R<0) R = 0;
+    if(G<0) G = 0;
+    if(B<0) B = 0;
+
+    if(legend) return QColor(255*R,255*G,255*B);
+    else{ glColor3f(R,G,B);
+        return QColor(255*R,255*G,255*B);}
 
 }
 

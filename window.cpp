@@ -10,6 +10,13 @@ Window::Window(QWidget *parent) :
     ui(new Ui::Window)
 {
     ui->setupUi(this);
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update_color_legend_vals()));
+    timer->start(250);
+    QTimer *timer2 = new QTimer(this);
+    timer2->setSingleShot(true);
+    connect(timer2, SIGNAL(timeout()), this, SLOT(update_color_legend()));
+    timer2->start(250);
 }
 
 Window::~Window()
@@ -34,6 +41,7 @@ void Window::on_simulationTimestepSlider_valueChanged(int value)
 void Window::on_scalarColoring_activated(const QString &arg1)
 {
     ui->myGLWidget->scalarColoring(arg1);
+    update_color_legend();
 }
 
 void Window::on_hedgehogScalingSlider_valueChanged(int value)
@@ -110,4 +118,79 @@ void Window::on_HedgehogType_activated(const QString &arg1)
 void Window::on_numberColors_valueChanged(int arg1)
 {
     ui->myGLWidget->setNColors(arg1);
+    update_color_legend();
+}
+
+
+void Window::on_radio_hedv_velocity_clicked()
+{
+    ui->myGLWidget->hedgehogVector(DATA_VELOCITY);
+}
+
+void Window::on_radio_hedv_forcefield_clicked()
+{
+    ui->myGLWidget->hedgehogVector(DATA_FORCEFIELD);
+}
+
+void Window::on_radio_hed_density_clicked()
+{
+    ui->myGLWidget->hedgehogScalar(DATA_DENSITY);
+}
+
+void Window::on_radio_hed_velocity_clicked()
+{
+    ui->myGLWidget->hedgehogScalar(DATA_VELOCITY);
+}
+
+void Window::on_radio_hed_forcefield_clicked()
+{
+    ui->myGLWidget->hedgehogScalar(DATA_FORCEFIELD);
+}
+
+void Window::update_color_legend_vals()
+{
+    ui->min_legend->setText(QString::number(ui->myGLWidget->get_min()));
+    ui->max_legend->setText(QString::number(ui->myGLWidget->get_max()));
+}
+
+
+void Window::update_color_legend()
+{
+    update_color_legend_vals();
+    QImage legend(1,400,QImage::Format_ARGB32);
+    for(int j = 0; j< legend.height(); j++)
+    {
+        QColor color(ui->myGLWidget->color_legend(j,399,0));
+        legend.setPixel(0,399-j,color.rgba());
+    }
+
+    QPixmap pix = QPixmap::fromImage(legend);
+    int w = ui->legend->width();
+    int h = ui->legend->height();
+    ui->legend->setPixmap(pix.scaled(w,h));
+}
+
+void Window::on_Col_hed_valueChanged(int arg1)
+{
+    ui->myGLWidget->setCOL(arg1);
+}
+
+void Window::on_Row_hed_valueChanged(int arg1)
+{
+    ui->myGLWidget->setROW(arg1);
+}
+
+void Window::on_horizontalSlider_valueChanged(int value)
+{
+    ui->myGLWidget->setRandomness(value);
+}
+
+void Window::on_radio_hedv_grad_den_clicked()
+{
+    ui->myGLWidget->hedgehogVector(DATA_GRADIENT_DENSITY);
+}
+
+void Window::on_radio_hedv_grad_vel_clicked()
+{
+    ui->myGLWidget->hedgehogVector(DATA_GRADIENT_VELOCITY);
 }
