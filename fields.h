@@ -12,7 +12,6 @@ protected:
     int dim_size;
     fftw_real min, max;
 
-    //void update_grad(int);
 public:
     fftw_real* field;
 

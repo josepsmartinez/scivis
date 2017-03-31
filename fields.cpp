@@ -146,15 +146,17 @@ void cVectorialField::initialize(int N, int DIM)
 
 void cVectorialField::update_x(int ix, fftw_real value)
 {
-    gradient.update(ix, value);
+    //gradient.update(ix, value);
     vectorialField::update_x(ix, value);
+    gradient.update(ix, field[ix]);
     //gradient.update(ix, value);
 }
 
 void cVectorialField::update_y(int ix, fftw_real value)
 {
-    gradient.update(ix, value);
+    //gradient.update(ix, value);
     vectorialField::update_y(ix, value);
+    gradient.update(ix, field[ix]);
     //gradient.update(ix, value);
 }
 
