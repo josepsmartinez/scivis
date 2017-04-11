@@ -78,6 +78,8 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
     if (draw_vecs)
     {
+        //vectorial_draw->rebuild();
+
         fftw_real  wng = ((fftw_real)winWidth -wn) / (fftw_real)(COL);   // Grid cell width
         fftw_real  hng = ((fftw_real)winHeight -hn) / (fftw_real)(ROW);  // Grid cell heigh
 
@@ -96,7 +98,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 max = scalar_draw_hedgehog->get_max();
                 min = 0;
             }
-            QColor colr = set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min);
+            QColor colr = set_colormap(scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min, hues, sats);
             fftw_real x = vec_scale * vectorial_draw->read_x(idx);
             fftw_real y = vec_scale * vectorial_draw->read_y(idx);
             float angle=0;
@@ -164,12 +166,12 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                     min = 0;
                 }
 
-                set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx1),scalar_col, n_colors, max, min);    glVertex2f(px1, py1);
-                set_colormap(scalar_draw->read(idx2),scalar_col, n_colors, max, min);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min);    glVertex2f(px0, py0);
-                set_colormap(scalar_draw->read(idx2),scalar_col, n_colors, max, min);    glVertex2f(px2, py2);
-                set_colormap(scalar_draw->read(idx3),scalar_col, n_colors, max, min);    glVertex2f(px3, py3);
+                set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx1),scalar_col, n_colors, max, min, hues, sats);    glVertex2f(px1, py1);
+                set_colormap(scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats);    glVertex2f(px0, py0);
+                set_colormap(scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats);    glVertex2f(px2, py2);
+                set_colormap(scalar_draw->read(idx3),scalar_col, n_colors, max, min, hues, sats);    glVertex2f(px3, py3);
 
             }
         }
@@ -341,6 +343,16 @@ void MyGLWidget::setClampMin(double new_clamp_min)
     clamp_min = new_clamp_min;
 }
 
+void MyGLWidget::setHueShift(float new_hues)
+{
+    hues = new_hues;
+}
+
+void MyGLWidget::setSaturationShift(float new_sats)
+{
+    sats = new_sats;
+}
+
 void MyGLWidget::setNColors(int n)
 {
     n_colors = n;
@@ -510,7 +522,7 @@ float MyGLWidget::get_min()
 }
 
 QColor MyGLWidget::color_legend(float value, fftw_real max=1.f, fftw_real min=0.f){
-    return set_colormap(value, scalar_col, n_colors, max, min,true);
+    return set_colormap(value, scalar_col, n_colors, max, min, hues, sats, true);
 }
 
 void MyGLWidget::update_jitter_matrix()

@@ -18,6 +18,8 @@ public:
     float r,g,b;
     void update_hsv();  //rgb->hsv
     void load_hsv();    //hsv->rgb
+
+    void shift(float, float);
 };
 
 using namespace std;

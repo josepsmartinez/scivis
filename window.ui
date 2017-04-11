@@ -250,7 +250,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Colormap">
          <attribute name="title">
@@ -444,42 +444,49 @@
            <string>Saturation</string>
           </property>
          </widget>
-         <widget class="QSpinBox" name="huevalue">
+         <widget class="QSlider" name="huevalue">
           <property name="geometry">
            <rect>
-            <x>350</x>
+            <x>290</x>
             <y>50</y>
-            <width>43</width>
+            <width>131</width>
             <height>22</height>
            </rect>
           </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <number>360</number>
-          </property>
-          <property name="value">
-           <number>0</number>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
          </widget>
-         <widget class="QSpinBox" name="saturationvalue">
+         <widget class="QSlider" name="saturationvalue">
           <property name="geometry">
            <rect>
-            <x>350</x>
+            <x>290</x>
             <y>80</y>
-            <width>43</width>
+            <width>131</width>
             <height>22</height>
            </rect>
           </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
           <property name="maximum">
-           <number>100</number>
+           <number>200</number>
           </property>
           <property name="value">
-           <number>50</number>
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="resethuesat">
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>100</y>
+            <width>51</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Reset</string>
           </property>
          </widget>
         </widget>
@@ -629,8 +636,8 @@
                <rect>
                 <x>10</x>
                 <y>20</y>
-                <width>110</width>
-                <height>101</height>
+                <width>125</width>
+                <height>103</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_2">

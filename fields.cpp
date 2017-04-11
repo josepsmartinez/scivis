@@ -58,7 +58,7 @@ fftw_real Field::scale(fftw_real value, fftw_real smin=NULL, fftw_real smax=NULL
 }
 
 int Field::index1d(int i, int j) {
-    return j*50 + i;
+    return j*dim_size + i;
 }
 
 // VECTORIAL
@@ -107,17 +107,18 @@ void gradientField::update(int ix, fftw_real value)
 
     fftw_real diff;
     diff = value - main->read(ix);
-    vectorialField::inc_x(ix,             -diff/delta);
-    vectorialField::inc_y(ix,             -diff/delta);
+    update_x(ix, -diff/delta);
+    update_y(ix, -diff/delta);
     if(x>0) {
         diff = value - main->read(ix-1);
-        vectorialField::inc_x(ix-1, diff/delta);
+        update_x(ix-1, diff/delta);
     }
     if(y>0) {
         diff = value - main->read(ix-dim_size);
-        vectorialField::inc_y(ix - dim_size, diff/delta);
+        update_y(ix - dim_size, diff/delta);
     }
 }
+
 
 // CONTINUOUS
 

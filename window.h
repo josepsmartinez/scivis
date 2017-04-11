@@ -77,6 +77,12 @@ private slots:
 
     void on_radio_hedv_grad_vel_clicked();
 
+    void on_huevalue_valueChanged(int value);
+
+    void on_saturationvalue_valueChanged(int value);
+
+    void on_resethuesat_clicked();
+
 public:
     Ui::Window *ui;
 };

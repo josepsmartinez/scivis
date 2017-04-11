@@ -12,7 +12,7 @@ Window::Window(QWidget *parent) :
     ui->setupUi(this);
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update_color_legend_vals()));
-    timer->start(250);
+    timer->start(100);
     QTimer *timer2 = new QTimer(this);
     timer2->setSingleShot(true);
     connect(timer2, SIGNAL(timeout()), this, SLOT(update_color_legend()));
@@ -193,4 +193,22 @@ void Window::on_radio_hedv_grad_den_clicked()
 void Window::on_radio_hedv_grad_vel_clicked()
 {
     ui->myGLWidget->hedgehogVector(DATA_GRADIENT_VELOCITY);
+}
+
+void Window::on_huevalue_valueChanged(int value)
+{
+    update_color_legend();
+    ui->myGLWidget->setHueShift((float)value/ui->huevalue->maximum());
+}
+
+void Window::on_saturationvalue_valueChanged(int value)
+{
+    update_color_legend();
+    ui->myGLWidget->setSaturationShift(2*((float)value/ui->saturationvalue->maximum()) -1);
+}
+
+void Window::on_resethuesat_clicked()
+{
+    ui->huevalue->setValue(0);
+    ui->saturationvalue->setValue(ui->saturationvalue->maximum()/2);
 }

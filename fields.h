@@ -28,6 +28,7 @@ public:
 
     fftw_real scale(fftw_real, fftw_real, fftw_real);
     int index1d(int, int);
+
 };
 
 
@@ -60,9 +61,10 @@ class gradientField : public vectorialField {
 private:
 protected:
     const fftw_real delta = 1;
+    Field* main;
 public:
     gradientField(Field* main_field): main(main_field) {}
-    Field* main;
+
     void update(int, fftw_real); // updates based on main field
 };
 

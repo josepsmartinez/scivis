@@ -54,6 +54,17 @@ void Color::load_hsv()
         case 4: r=lz; g=lx; b=v;  break;
         case 5: r=v;  g=lx; b=ly; break;
     }
+
+
+
+}
+
+void Color::shift(float hue_shift, float sat_value)
+{
+    update_hsv();
+    h+=hue_shift; if(h>1.f) h-=1.f;
+    s+=sat_value; if(s>1.f) s = 1.f; if (s<0.f) s = 0.f;
+    load_hsv();
 }
 
 //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
@@ -133,7 +144,7 @@ void ncolors_subsample(float* value, int n_colors) { // by reference
 }
 
 //set_colormap: Sets three different types of colormaps
-QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f, bool legend=false)
+QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f, float hue_shift=0.f, float saturation_value=0.f, bool legend=false)
 {
     float R =0,G=0,B=0;
 
@@ -169,6 +180,10 @@ QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f
     if(R<0) R = 0;
     if(G<0) G = 0;
     if(B<0) B = 0;
+
+    Color color(R,G,B);
+    color.shift(hue_shift, saturation_value);
+    R=color.r; G=color.g; B=color.b;
 
     if(legend) return QColor(255*R,255*G,255*B);
     else{ glColor3f(R,G,B);

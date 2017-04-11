@@ -52,6 +52,9 @@ public slots:
     void setClampMax(double);
     void setClampMin(double);
 
+    void setHueShift(float);
+    void setSaturationShift(float);
+
     void setNColors(int);
 
     void setROW(int);
@@ -102,6 +105,7 @@ private:
     int hedgehog_vector;
     bool clamp;
     float clamp_max, clamp_min;
+    float hues, sats;
     float max,min;
     int n_colors;
     int data_type; // data used
