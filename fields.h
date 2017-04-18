@@ -16,6 +16,7 @@ public:
     fftw_real* field;
 
     Field();
+    Field(const Field &f);
     void initialize(int, int); // mimics the simulation class initialization pattern
 
     void update(int, fftw_real);
