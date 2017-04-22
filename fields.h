@@ -17,6 +17,7 @@ public:
 
     Field();
     Field(const Field &f);
+    void deepcopy(Field *f);
     void initialize(int, int); // mimics the simulation class initialization pattern
 
     void update(int, fftw_real);
@@ -48,7 +49,7 @@ public:
     void initialize(int,int); // also initializes x,y
 
 
-
+    void deepcopyv(vectorialField *f);
     void update_x(int, fftw_real);
     void update_y(int, fftw_real);
     void inc_x(int, fftw_real);

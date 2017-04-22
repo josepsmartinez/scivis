@@ -17,6 +17,16 @@ Field::Field(const Field &f)
     //min=f.min; max=f.max;
 }
 
+void Field::deepcopy(Field *f)
+{
+    //memcpy(field, f->field, sizeof(field));
+    for(int i = 0;i<dim_size*dim_size;i++)
+    {
+        field[i] = f->field[i];
+    }
+    min=f->min; max=f->max;
+}
+
 void Field::initialize(int N, int DIM)
 {
     dim_size = DIM;
@@ -79,6 +89,16 @@ void vectorialField::initialize(int N, int DIM)
     //gradient.initialize(N, DIM);
     x.initialize(N, DIM); y.initialize(N, DIM);
 }
+void vectorialField::deepcopyv(vectorialField *f)
+{
+    //memcpy(field, f->field, sizeof(field));
+    for(int i = 0;i<dim_size*dim_size;i++)
+    {
+        field[i] = f->field[i];
+    }
+    min=f->min; max=f->max;
+}
+
 
 void vectorialField::update_x(int ix, fftw_real value)
 {

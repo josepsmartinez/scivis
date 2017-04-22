@@ -28,20 +28,24 @@ public:
 class StreamLine : public std::iterator<std::input_iterator_tag, int>
 {
     // internal parameters
-    Point p;
+    Point start;
     vectorialField* v;
     int dim;
     int steps;
-    const fftw_real dt = 0.05;
+    const fftw_real dt = 0.3;
+    bool end = false;
+    Point current;
 
     void load_ix(int);
     int get_ix();
 public:
-    StreamLine(int, vectorialField*, int);                                   // constructor given an starting point
+    StreamLine(float, float, vectorialField*, int);                                   // constructor given an starting point
     StreamLine(const StreamLine& mit);     // copy constructor
 
     StreamLine& operator++();                           // rule to generate next point
     StreamLine operator++(int) {StreamLine tmp(*this); operator++(); return tmp;} // still dont know why this pattern is necessary
+
+    void change_field(vectorialField* nv);
 
     // iteration conditions
     bool operator==(const StreamLine&);
@@ -51,7 +55,7 @@ public:
 
     // output
     Point operator*();
-    vector<Point> line(int);
+    vector<Point> line(int, int lenght);
 };
 
 #endif // STREAMLINE_H

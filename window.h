@@ -83,6 +83,30 @@ private slots:
 
     void on_resethuesat_clicked();
 
+    void on_radio_never_streamline_clicked();
+
+    void on_radio_frozen_streamline_clicked();
+
+    void on_radio_always_streamline_clicked();
+
+    void on_NumberofStreamLines_valueChanged(int arg1);
+
+    void on_reposition_Streamlines_clicked();
+
+    void on_separate_streamlines_clicked(bool checked);
+
+    void on_streamline_lenght_valueChanged(int value);
+
+    void on_checkBox_clicked(bool checked);
+
+    void on_AlphaSlider_valueChanged(int value);
+
+    void on_checkBox_2_clicked(bool checked);
+
+    void on_rotation_valueChanged(int value);
+
+    void on_slice_timestep_valueChanged(int value);
+
 public:
     Ui::Window *ui;
 };

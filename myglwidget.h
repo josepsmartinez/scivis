@@ -8,6 +8,7 @@
 #include <rfftw.h>              //the numerical simulation FFTW library
 #include "simulation.h"
 #include "streamline.h"
+#include "timebuffer.h"
 #include <vector>
 
 
@@ -41,7 +42,15 @@ public slots:
 
     void drawMatter(bool);
 
+    void slice_to_position(int plane);
+
+    void drawSlices(bool);
+
     void drawHedgehogs(bool);
+
+    void setSeparateStreamlines(bool);
+
+    void setDataAlpha(bool);
 
     void hedgehogType(QString new_hedgehog_type);
 
@@ -56,6 +65,9 @@ public slots:
 
     void setHueShift(float);
     void setSaturationShift(float);
+    void setAlpha(float);
+
+    void setStreamlineLenght(int);
 
     void setNColors(int);
 
@@ -63,6 +75,14 @@ public slots:
     void setCOL(int);
 
     void setRandomness(int);
+
+    void setnumStreamline(int);
+
+    void setRotationAngle(int);
+
+    void setnumSlices(int);
+
+    void setSliceTimestep(int);
 
     void changeData(QString datatype);
 
@@ -72,18 +92,24 @@ public slots:
 
     void fluidViscosity(int position);
 
-    void drawLine(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
+    void drawLine(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn, int plane);
 
-    void drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn);
+    void drawArrow(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn, int plane);
 
-    void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn, QColor color);
+    void drawCone(float angle, float lenght, int x_coord, int y_coord, int scaling_factor, fftw_real wn, fftw_real hn, QColor color, int plane);
 
     QColor color_legend(float value, fftw_real max, fftw_real min);
+
+    void drawStreamlines(QString draw);
+
 
     float get_max();
     float get_min();
 
     void update_jitter_matrix();
+
+    void update_streamline_matrix();
+
 
 
 protected:
@@ -102,6 +128,11 @@ private:
     float vec_scale;			//scaling of hedgehogs
     bool   draw_smoke;           //draw the smoke or not
     bool   draw_vecs;            //draw the vector field or not
+    bool draw_slices;
+    bool draw_streamline;
+    bool draw_frozenstreamline;
+    bool separate_streamlines;
+    int streamline_lenght;
     int hedgehog_type;
     int hedgehog_scalar;
     int hedgehog_vector;
@@ -118,14 +149,25 @@ private:
     float randomness;
     std::vector<std::vector<float>> jitter_j;
     std::vector<std::vector<float>> jitter_i;
+    int numStreamline;
     Simulation simulation;
     fftw_real  cell_width;
     fftw_real  cell_height;
 
-    StreamLine* stream;
+    float alpha;
+    bool data_alpha;
+    int rotation_angle;
+    int num_slices;
+    int timesteps_each_slice;
+    int timestep_count;
+
+
+    vector<StreamLine*> streamlines;
     Field* scalar_draw;
     Field* scalar_draw_hedgehog;
     vectorialField* vectorial_draw;
+
+    vector<TimeBuffer> buffer;
 };
 
 #endif // MYGLWIDGET_H

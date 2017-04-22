@@ -144,13 +144,16 @@ void ncolors_subsample(float* value, int n_colors) { // by reference
 }
 
 //set_colormap: Sets three different types of colormaps
-QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f, float hue_shift=0.f, float saturation_value=0.f, bool legend=false)
+QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f, fftw_real min=0.f, float hue_shift=0.f, float saturation_value=0.f, float alpha=1.f, bool data_alpha = false, bool legend=false)
 {
     float R =0,G=0,B=0;
 
     // normalizes value
     value = (value - min)/(max - min);
     if(value>1.f) value=1.f; if(value<0.f) value=0.f;
+    float alphamod = value*0.87f+0.13f;
+    if(data_alpha) alpha*=alphamod;
+    if(alpha>1.f) alpha = 1.f;
 
     // subsample according to n_colors
     ncolors_subsample(&value, n_colors);
@@ -185,9 +188,9 @@ QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f
     color.shift(hue_shift, saturation_value);
     R=color.r; G=color.g; B=color.b;
 
-    if(legend) return QColor(255*R,255*G,255*B);
-    else{ glColor3f(R,G,B);
-        return QColor(255*R,255*G,255*B);}
+    if(legend) return QColor(255*R,255*G,255*B,255*alpha);
+    else{ glColor4f(R,G,B,alpha);
+        return QColor(255*R,255*G,255*B,255*alpha);}
 
 }
 

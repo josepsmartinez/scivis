@@ -4,7 +4,7 @@
 // (x,y) <-> ix
 void StreamLine::load_ix(int ix)
 {
-    p = Point(vector<fftw_real>{(float) (ix % dim), (float) (ix / dim)});
+    start = Point(vector<fftw_real>{(float) (ix % dim), (float) (ix / dim)});
     //points.push_back(Point(vector<fftw_real>{(float) (ix % dim), (float) (ix / dim)}));
     //p.p[0] = (float) (ix % dim);
     //p.p[1] = (float) (ix / dim);
@@ -12,13 +12,13 @@ void StreamLine::load_ix(int ix)
 
 int StreamLine::get_ix()
 {
-    return ((int)(p.p[0] + 0.5f)) + ((int)(p.p[1] + 0.5f))*dim; // closest neighbor (jean pattern)
+    return ((int)(current.p[0] + 0.5f)) + ((int)(current.p[1] + 0.5f))*dim; // closest neighbor (jean pattern)
 }
 
 
 // CONSTRUCTORS
-StreamLine::StreamLine(int ix, vectorialField* srcv, int dim)
-    : p(dim), v(srcv), dim(dim), steps(0)
+StreamLine::StreamLine(float i, float j, vectorialField* srcv, int dim)
+    : start(2), v(srcv), dim(dim), steps(0), current(2)
 {
     /*
      * here we can decide whether the stream follows
@@ -28,11 +28,12 @@ StreamLine::StreamLine(int ix, vectorialField* srcv, int dim)
      v = (vectorialField*) malloc(sizeof(vectorialField));
      *v = vectorialField(*srcv); // not entirely sure about vecfield copy constructor
     */
-    load_ix(ix);
+    //load_ix(ix);
+    start = Point(vector<fftw_real>{i, j});
 }
 
 StreamLine::StreamLine(const StreamLine &mit)
-    : v(mit.v), dim(mit.dim), steps(mit.steps), dt(mit.dt), p(mit.p)
+    : v(mit.v), dim(mit.dim), steps(mit.steps), dt(mit.dt), start(mit.start), current(2)
 {
     //for(int i=0; i<mit.points.size();i++) points[i] = mit.points[i];
 }
@@ -48,12 +49,17 @@ StreamLine &StreamLine::operator++()
     shift.scalar_mul(1/shift.norm());
     shift.scalar_mul(dt);
 
-    p.pointwise_sum({shift.p[0], shift.p[1]});
+    current.pointwise_sum({shift.p[0], shift.p[1]});
+    if(current.p[0]>50 || current.p[1] > 50 || current.p[0]<0 || current.p[1]<0) end = true;
     //points.push_back(point);
 
     steps++;
 }
 
+void StreamLine::change_field(vectorialField* nv)
+{
+    v = nv;
+}
 
 bool StreamLine::operator==(const StreamLine &other)
 {
@@ -77,15 +83,28 @@ bool StreamLine::operator!=(int s)
 
 Point StreamLine::operator*()
 {
-    return p; // copy by reference (hopefully)
+    return current; // copy by reference (hopefully)
 }
 
-vector<Point> StreamLine::line(int size)
+vector<Point> StreamLine::line(int size, int lenght = 500)
 {
+    current = start;
+    end = false;
     vector<Point> l;
-    for(int i=0; i<size; i++) {
-        l.push_back(**this);
-        (*this)++;
+    if(size<0)
+    {
+        int i =0;
+        while(!end && i < lenght) {
+            l.push_back(**this);
+            (*this)++;
+            i++;
+        }
+    }
+    else{
+        for(int i=0; i<size; i++) {
+            l.push_back(**this);
+            (*this)++;
+        }
     }
     return l;
 }

@@ -60,19 +60,6 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>99</width>
-          <height>22</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Timestep</string>
-        </property>
-       </widget>
        <widget class="QSlider" name="simulationTimestepSlider">
         <property name="geometry">
          <rect>
@@ -86,16 +73,22 @@
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;timestep&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="minimum">
-         <number>1</number>
+         <number>1000</number>
         </property>
         <property name="maximum">
-         <number>5000</number>
+         <number>20000</number>
+        </property>
+        <property name="singleStep">
+         <number>10</number>
+        </property>
+        <property name="pageStep">
+         <number>100</number>
         </property>
         <property name="value">
-         <number>500</number>
+         <number>4000</number>
         </property>
         <property name="sliderPosition">
-         <number>500</number>
+         <number>4000</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -119,7 +112,7 @@
          <rect>
           <x>0</x>
           <y>40</y>
-          <width>181</width>
+          <width>101</width>
           <height>22</height>
          </rect>
         </property>
@@ -195,7 +188,7 @@
          <rect>
           <x>90</x>
           <y>80</y>
-          <width>101</width>
+          <width>61</width>
           <height>26</height>
          </rect>
         </property>
@@ -220,7 +213,7 @@
          <rect>
           <x>90</x>
           <y>60</y>
-          <width>100</width>
+          <width>61</width>
           <height>20</height>
          </rect>
         </property>
@@ -250,7 +243,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="Colormap">
          <attribute name="title">
@@ -769,7 +762,308 @@
           </property>
          </widget>
         </widget>
+        <widget class="QWidget" name="Streamline">
+         <attribute name="title">
+          <string>Streamline</string>
+         </attribute>
+         <widget class="QRadioButton" name="radio_never_streamline">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>85</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Never</string>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="radio_frozen_streamline">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>85</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Frozen</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="radio_always_streamline">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>85</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Always</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_13">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>0</y>
+            <width>100</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Draw Streamlines</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="NumberofStreamLines">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>30</y>
+            <width>43</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>250</number>
+          </property>
+          <property name="value">
+           <number>20</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_14">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>10</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of Streamlines</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="reposition_Streamlines">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>70</y>
+            <width>80</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Reposition</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="separate_streamlines">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>20</y>
+            <width>101</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Separate areas</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QSlider" name="streamline_lenght">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>80</y>
+            <width>160</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>700</number>
+          </property>
+          <property name="value">
+           <number>250</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_15">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>50</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Streamlines lenght</string>
+          </property>
+         </widget>
+        </widget>
        </widget>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>120</y>
+          <width>81</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Draw Slices</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="AlphaSlider">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>130</y>
+          <width>101</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fluid viscosity&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+        <property name="value">
+         <number>1000</number>
+        </property>
+        <property name="sliderPosition">
+         <number>1000</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_16">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>110</y>
+          <width>31</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Alpha</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>110</y>
+          <width>72</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Data mod</string>
+        </property>
+       </widget>
+       <widget class="QDial" name="rotation">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>60</y>
+          <width>50</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="maximum">
+         <number>360</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>201</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Timestep</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_17">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>20</y>
+          <width>91</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Slice timestep</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="slice_timestep">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>40</y>
+          <width>81</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fluid viscosity&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>25</number>
+        </property>
+        <property name="value">
+         <number>10</number>
+        </property>
+        <property name="sliderPosition">
+         <number>10</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <zorder>simulationTimestepSlider</zorder>
+       <zorder>label_2</zorder>
+       <zorder>fluidViscositySlider</zorder>
+       <zorder>freezeCheckbox</zorder>
+       <zorder>drawingHedgehogsCheckbox</zorder>
+       <zorder>drawingMatterCheckbox</zorder>
+       <zorder>Dataset</zorder>
+       <zorder>label_4</zorder>
+       <zorder>tabWidget</zorder>
+       <zorder>checkBox</zorder>
+       <zorder>label_16</zorder>
+       <zorder>AlphaSlider</zorder>
+       <zorder>checkBox_2</zorder>
+       <zorder>rotation</zorder>
+       <zorder>label</zorder>
+       <zorder>label_17</zorder>
+       <zorder>slice_timestep</zorder>
       </widget>
      </item>
     </layout>

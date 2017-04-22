@@ -212,3 +212,63 @@ void Window::on_resethuesat_clicked()
     ui->huevalue->setValue(0);
     ui->saturationvalue->setValue(ui->saturationvalue->maximum()/2);
 }
+
+void Window::on_radio_never_streamline_clicked()
+{
+    ui->myGLWidget->drawStreamlines("Never");
+}
+
+void Window::on_radio_frozen_streamline_clicked()
+{
+    ui->myGLWidget->drawStreamlines("Frozen");
+}
+
+void Window::on_radio_always_streamline_clicked()
+{
+    ui->myGLWidget->drawStreamlines("Always");
+}
+
+void Window::on_NumberofStreamLines_valueChanged(int arg1)
+{
+    ui->myGLWidget->setnumStreamline(arg1);
+}
+
+void Window::on_reposition_Streamlines_clicked()
+{
+    ui->myGLWidget->update_streamline_matrix();
+}
+
+void Window::on_separate_streamlines_clicked(bool checked)
+{
+    ui->myGLWidget->setSeparateStreamlines(checked);
+}
+
+void Window::on_streamline_lenght_valueChanged(int value)
+{
+    ui->myGLWidget->setStreamlineLenght(value);
+}
+
+void Window::on_checkBox_clicked(bool checked)
+{
+    ui->myGLWidget->drawSlices(checked);
+}
+
+void Window::on_AlphaSlider_valueChanged(int value)
+{
+    ui->myGLWidget->setAlpha((float)value/(float)ui->AlphaSlider->maximum());
+}
+
+void Window::on_checkBox_2_clicked(bool checked)
+{
+    ui->myGLWidget->setDataAlpha(checked);
+}
+
+void Window::on_rotation_valueChanged(int value)
+{
+    ui->myGLWidget->setRotationAngle(value);
+}
+
+void Window::on_slice_timestep_valueChanged(int value)
+{
+    ui->myGLWidget->setSliceTimestep(value);
+}

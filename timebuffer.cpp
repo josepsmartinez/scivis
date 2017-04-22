@@ -1,25 +1,29 @@
 #include "timebuffer.h"
 
 
-
-void TimeBuffer::initialize(int n, Field *src)
+void TimeBuffer::initialize(int n, Field *src, int dime)
 {
     size=n; source=src;
+    dim = dime;
     istart=0;
-    storage = vector<Field>(n);
+    stored=0;
+    storage.resize(n);
 
 
 }
 
 void TimeBuffer::append()
 {
-    if (stored < storage.size()) { // buffer is not full yet
+    if (stored < size) { // buffer is not full yet
 
-        storage.push_back(Field(*source));
+        storage[stored].initialize(dim*dim,dim);
+        storage[stored].deepcopy(source);
+        stored++;
     }
     else {
-        storage[istart] = Field(*source); // overwrites initial position
-        istart++; stored++;
+        storage[istart].deepcopy(source); // overwrites initial position
+        istart++;
+        if(istart==storage.size()) istart =0;
     }
 }
 
@@ -27,6 +31,7 @@ Field* TimeBuffer::read(int i)
 {
     if (i < stored) {
         i += istart;
+        i = i%storage.size();
         return &(storage[i]);
     }
     else return NULL;
