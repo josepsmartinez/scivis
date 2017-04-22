@@ -4,14 +4,35 @@
 #include <math.h>
 #include "fields.h"
 
+using namespace std;
+
+class Point {
+private:
+
+public:
+    vector<fftw_real> p;
+    Point(int dim);
+    Point(vector<fftw_real> src);
+    Point(const Point& src);
+    initialize(vector<fftw_real> src);
+
+    fftw_real norm();
+    normalize();
+
+    scalar_mul(fftw_real s);
+    pointwise_mul(vector<fftw_real> src);
+    pointwise_sum(vector<fftw_real> src);
+
+};
+
 class StreamLine : public std::iterator<std::input_iterator_tag, int>
 {
     // internal parameters
-    float x,y;
+    vector<Point> points;
+    vectorialField* v;
     int dim;
     int steps;
-    vectorialField* v;
-    const fftw_real dt = 0.25;
+    const fftw_real dt = 0.05;
 
     void load_ix(int);
     int get_ix();
@@ -26,7 +47,7 @@ public:
     bool operator!=(const StreamLine&);
     bool operator==(int);
     bool operator!=(int);
-    int operator*();                                   // output
+    vector<Point> operator*();                                   // output
 };
 
 #endif // STREAMLINE_H

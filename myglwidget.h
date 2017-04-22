@@ -7,7 +7,9 @@
 #include <QTimer>
 #include <rfftw.h>              //the numerical simulation FFTW library
 #include "simulation.h"
+#include "streamline.h"
 #include <vector>
+
 
 const int DATA_DENSITY=0;   //possible data types
 const int DATA_VELOCITY=1;
@@ -120,6 +122,7 @@ private:
     fftw_real  cell_width;
     fftw_real  cell_height;
 
+    StreamLine* stream;
     Field* scalar_draw;
     Field* scalar_draw_hedgehog;
     vectorialField* vectorial_draw;

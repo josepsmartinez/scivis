@@ -11,6 +11,8 @@
 
 #include "streamline.h"
 
+bool s=true;
+
 MyGLWidget::MyGLWidget(QWidget *parent)
 {
     //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
@@ -47,6 +49,8 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     scalar_draw_hedgehog = simulation.get_rho();
     vectorial_draw = simulation.get_v();
 
+    stream = new StreamLine((DIM/2)+DIM*DIM/2, vectorial_draw, DIM);
+
 }
 
 MyGLWidget::~MyGLWidget()
@@ -76,6 +80,27 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     int        i, j, idx; double px,py;
     fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
     fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
+
+    if(simulation.get_frozen()) { // streamline
+        //StreamLine stream((DIM/2)+DIM*DIM/2, vectorial_draw, DIM);
+        if (s){
+            delete stream;
+            stream = new StreamLine((DIM/2)+DIM*DIM/2, vectorial_draw, DIM);
+            for(int i=0;i<=500;i++) (*stream)++;
+            s=false;
+        };
+
+
+        vector<Point> stream_points = **stream;
+        glBegin(GL_LINE_STRIP);
+        glColor3f(1.f,1.f,1.f);
+        for(int i=0; i < stream_points.size(); i++){
+
+            glVertex2f(wn+stream_points[i].p[0]*wn, hn+stream_points[i].p[1]*hn);
+        }
+        glEnd();
+
+    }
     if (draw_vecs)
     {
         //vectorial_draw->rebuild();
@@ -180,21 +205,9 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
         //printf("%f %f \n", scalar_draw->get_min(), scalar_draw->get_max());
         //printf("%f %f \n", simulation.get_f()->get_min(), simulation.get_f()->get_max());
 
-        /* streamis
-        StreamLine stream;
-        StreamLine send(0+10);
-        int j=0;
-        for (StreamLine i(0, vectorial_draw, DIM); i!=50; i++,j++)
-            printf("%d streamei %d \n", *i, j);
-        */
 
 
-           // NAO FACO A MENOR IDEIA DE COMO ATUALIZAR A INTERFACE (acho que vai ser necessario)
-        //Window* parent = qobject_cast<Window*>(this->parent());
-        //qobject_cast<QMainWindow>(this->parent()).ui->clamp_min->value();
-        //parent->clamp_min->value();
-        //clamp_min->value();
-        //scalar_draw->reset_limits();
+
     }
     glFlush();
 }
@@ -316,6 +329,7 @@ void MyGLWidget::showAnimation(bool new_frozen)
 {
     // ! because if the checkbox = true, frozen should be set to false
     simulation.set_frozen(!new_frozen);
+    s = true;
 }
 
 void MyGLWidget::drawMatter(bool new_draw_smoke)

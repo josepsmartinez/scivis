@@ -8,12 +8,13 @@ Field::Field()
 }
 
 Field::Field(const Field &f)
+    : dim_size(f.dim_size), min(f.min), max(f.max)
 {
-    dim_size = f.dim_size;
-    int n = sizeof(f.field) / sizeof(fftw_real); // doubts about that might save n on class field
+    //dim_size = f.dim_size;
+    int n = sizeof(f.field) / sizeof(fftw_real); // doubts about, that might save n on class field
     initialize(n, dim_size);
     memcpy(field, f.field, sizeof(field));
-    min=f.min; max=f.max;
+    //min=f.min; max=f.max;
 }
 
 void Field::initialize(int N, int DIM)
