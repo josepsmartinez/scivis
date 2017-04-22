@@ -81,17 +81,19 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
     fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
 
-    if(simulation.get_frozen()) { // streamline
+    if(simulation.get_frozen() || true) { // streamline
         //StreamLine stream((DIM/2)+DIM*DIM/2, vectorial_draw, DIM);
-        if (s){
+        int sl_npoints = 500;
+        if (true){
             delete stream;
             stream = new StreamLine((DIM/2)+DIM*DIM/2, vectorial_draw, DIM);
-            for(int i=0;i<=500;i++) (*stream)++;
+            //for(int i=0;i<=500;i++) (*stream)++;
             s=false;
         };
 
 
-        vector<Point> stream_points = **stream;
+        //vector<Point> stream_points = **stream;
+        vector<Point> stream_points = stream->line(sl_npoints);
         glBegin(GL_LINE_STRIP);
         glColor3f(1.f,1.f,1.f);
         for(int i=0; i < stream_points.size(); i++){

@@ -1,25 +1,24 @@
 #include "streamline.h"
-#include <QtWidgets>
 
 
 // (x,y) <-> ix
 void StreamLine::load_ix(int ix)
 {
-    points.push_back(Point(vector<fftw_real>{(float) (ix % dim), (float) (ix / dim)}));
-    //point.p[0] = (float) (ix % dim);
-    //point.p[1] = (float) (ix / dim);
+    p = Point(vector<fftw_real>{(float) (ix % dim), (float) (ix / dim)});
+    //points.push_back(Point(vector<fftw_real>{(float) (ix % dim), (float) (ix / dim)}));
+    //p.p[0] = (float) (ix % dim);
+    //p.p[1] = (float) (ix / dim);
 }
 
 int StreamLine::get_ix()
 {
-    Point point = points.back();
-    return ((int)(point.p[0] + 0.5f)) + ((int)(point.p[1]+ 0.5f))*dim; // closest neighbor (jean pattern)
+    return ((int)(p.p[0] + 0.5f)) + ((int)(p.p[1] + 0.5f))*dim; // closest neighbor (jean pattern)
 }
 
 
 // CONSTRUCTORS
 StreamLine::StreamLine(int ix, vectorialField* srcv, int dim)
-    : points(), v(srcv), dim(dim), steps(0)
+    : p(dim), v(srcv), dim(dim), steps(0)
 {
     /*
      * here we can decide whether the stream follows
@@ -33,7 +32,7 @@ StreamLine::StreamLine(int ix, vectorialField* srcv, int dim)
 }
 
 StreamLine::StreamLine(const StreamLine &mit)
-    : v(mit.v), dim(mit.dim), steps(mit.steps), dt(mit.dt), points(mit.points)
+    : v(mit.v), dim(mit.dim), steps(mit.steps), dt(mit.dt), p(mit.p)
 {
     //for(int i=0; i<mit.points.size();i++) points[i] = mit.points[i];
 }
@@ -42,24 +41,15 @@ StreamLine::StreamLine(const StreamLine &mit)
 StreamLine &StreamLine::operator++()
 {
 
-    Point point = points.back();
+    //Point point = points.back();
     int ix = get_ix();
-    /*QVector2D mov(v->read_x(ix),v->read_y(ix));
-    mov.normalize();
-    point.pointwise_sum({
-        mov.x()*dt,
-        mov.y()*dt
-    });
-    */
+
     Point shift({v->read_x(ix), v->read_y(ix)});
-    //shift.scalar_mul(1/pow(v->read_x(ix)*v->read_x(ix) + v->read_y(ix)*v->read_y(ix), 0.5f));
     shift.scalar_mul(1/shift.norm());
-    //shift.normalize();
     shift.scalar_mul(dt);
 
-    point.pointwise_sum({shift.p[0], shift.p[1]});
-    points.push_back(point);
-
+    p.pointwise_sum({shift.p[0], shift.p[1]});
+    //points.push_back(point);
 
     steps++;
 }
@@ -85,9 +75,19 @@ bool StreamLine::operator!=(int s)
     return (steps!=s);
 }
 
-vector<Point> StreamLine::operator*()
+Point StreamLine::operator*()
 {
-    return points; // copy by reference (hopefully)
+    return p; // copy by reference (hopefully)
+}
+
+vector<Point> StreamLine::line(int size)
+{
+    vector<Point> l;
+    for(int i=0; i<size; i++) {
+        l.push_back(**this);
+        (*this)++;
+    }
+    return l;
 }
 
 

@@ -28,7 +28,7 @@ public:
 class StreamLine : public std::iterator<std::input_iterator_tag, int>
 {
     // internal parameters
-    vector<Point> points;
+    Point p;
     vectorialField* v;
     int dim;
     int steps;
@@ -43,11 +43,15 @@ public:
     StreamLine& operator++();                           // rule to generate next point
     StreamLine operator++(int) {StreamLine tmp(*this); operator++(); return tmp;} // still dont know why this pattern is necessary
 
-    bool operator==(const StreamLine&);             // iteration conditions
+    // iteration conditions
+    bool operator==(const StreamLine&);
     bool operator!=(const StreamLine&);
     bool operator==(int);
     bool operator!=(int);
-    vector<Point> operator*();                                   // output
+
+    // output
+    Point operator*();
+    vector<Point> line(int);
 };
 
 #endif // STREAMLINE_H
