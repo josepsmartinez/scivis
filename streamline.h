@@ -9,6 +9,8 @@ using namespace std;
 class Point {
 private:
 
+protected:
+
 public:
     vector<fftw_real> p;
     Point(int dim);
@@ -25,6 +27,15 @@ public:
 
 };
 
+class Point3D : public Point {
+public:
+
+    Point3D();
+    Point3D(vector<fftw_real> src);
+    Point3D(const Point& src);
+    Point3D(const Point3D& src);
+};
+
 class StreamLine : public std::iterator<std::input_iterator_tag, int>
 {
     // internal parameters
@@ -32,14 +43,15 @@ class StreamLine : public std::iterator<std::input_iterator_tag, int>
     vectorialField* v;
     int dim;
     int steps;
-    const fftw_real dt = 0.3;
+    fftw_real dt;
     bool end = false;
+    bool normalize = true;
     Point current;
 
     void load_ix(int);
     int get_ix();
 public:
-    StreamLine(float, float, vectorialField*, int);                                   // constructor given an starting point
+    StreamLine(float, float, vectorialField*, int, fftw_real, bool);    // constructor given an starting point, an field, its dimension, dt and wether the shift must be normalized
     StreamLine(const StreamLine& mit);     // copy constructor
 
     StreamLine& operator++();                           // rule to generate next point
@@ -56,6 +68,7 @@ public:
     // output
     Point operator*();
     vector<Point> line(int, int lenght);
+    Point3D point3D(fftw_real);
 };
 
 #endif // STREAMLINE_H

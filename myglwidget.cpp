@@ -10,6 +10,7 @@
 #include <simulation.cpp>              //the numerical simulation FFTW library
 
 #include "streamline.h"
+#include "streamsurface.h"
 #include "timebuffer.h"
 
 
@@ -23,6 +24,7 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     draw_frozenstreamline = true;
     draw_slices = false;
     draw_streamline = false;
+    draw_streamsurface = false;
     separate_streamlines = true;
     streamline_lenght = 250;
     hedgehog_type = HEDGEHOG_LINE;
@@ -34,7 +36,7 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     min = 0;
     randomness = 0;
     clamp_min = 0;
-    scalar_col = 0;           //method for scalar coloring
+    scalar_col = COLOR_RAINBOW;           //method for scalar coloring
     n_colors = 64;
     data_type = DATA_DENSITY;
     DIM = 50;
@@ -88,8 +90,8 @@ void MyGLWidget::slice_to_position(int plane)
     float halfw = winWidth/2;
     float halfh =winHeight/2;
     glTranslatef(halfw,halfh,0);
+    glRotatef(15,1,0,0);
     glRotatef(-45 + rotation_angle,0,1,0);
-    glRotatef(5,1,0,0);
     glTranslatef(0,0,(plane-(float)num_slices/2)*halfh/10); //
     glScalef(0.7f,0.7f,0.7f);
     glTranslatef(-halfw,-halfh,0);
@@ -106,162 +108,226 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     glEnable (GL_BLEND);
     glClearColor(0.0,0.0,0.0,0.0);
 
-    for(int plane = 0;plane<num_slices;plane++)
+
+
+
+    if(draw_streamsurface)
     {
         glPushMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        if(draw_slices){
-            slice_to_position(plane);
-        }
+        float halfw = winWidth/2;
+        float halfh =winHeight/2;
+        //slice_to_position(num_slices/2);
+        glScalef(halfw,halfh,1);
 
-        int        i, j, idx; double px,py;
-        fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
-        fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
-
-        if(draw_streamline || (simulation.get_frozen() && draw_frozenstreamline)) { // streamline
-            for(int i = 0; i < numStreamline; i++) //get and draw lines
-            {
-                vector<Point> stream_points = streamlines[i]->line(-1,streamline_lenght); // negative is until border is reached
-                glBegin(GL_LINE_STRIP);
-                //glColor3f(1.f,1.f,1.f);
-                for(int i=0; i < stream_points.size(); i++){
-                    if(clamp)
-                    {
-                        min = clamp_min;
-                        max = clamp_max;
-                    }else
-                    {
-                        max = simulation.get_v()->get_max();
-                        min = 0;
-                    }
-
-                    idx = ((int)(stream_points[i].p[0] + 0.5f)) + ((int)(stream_points[i].p[1] + 0.5f))*DIM;
-                    set_colormap(simulation.get_v()->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
-                    glVertex2f(wn+stream_points[i].p[0]*wn, hn+stream_points[i].p[1]*hn);
-                }
-                glEnd();
-            }
-
-        }
-        if (draw_vecs)
+        int idx0, idx1, idx2, idx3;
+        double px0, py0, pz0, px1, py1, pz1, px2, py2, pz2, px3, py3, pz3;
+        int quads = 2;
+        for(int i = 0;i < quads;i++)
         {
-            //vectorial_draw->rebuild();
+            px0=0+1*i;
+            py0=0+1*i;
+            pz0=0;
+            px1=1+1*i;
+            py1=0+1*i;
+            pz1=1;
+            px2=1+1*i;
+            py2=1+1*i;
+            pz2=1;
+            px3=0+1*i;
+            py3=1+1*i;
+            pz3=1;
 
-            fftw_real  wng = ((fftw_real)winWidth -wn) / (fftw_real)(COL);   // Grid cell width
-            fftw_real  hng = ((fftw_real)winHeight -hn) / (fftw_real)(ROW);  // Grid cell heigh
+            idx0=1;
+            idx1=2;
+            idx2=3;
+            idx3=4;
 
-            for (i = 0; i < COL; i++)
-              for (j = 0; j < ROW; j++)
-              {
-                int interpolated_j = ((float)j+ jitter_j[i][j])*((float)DIM/(float)ROW) +0.5; // closest neighbor
-                int interpolated_i = ((float)i+ jitter_i[i][j])*((float)DIM/(float)COL) +0.5;
-                idx = interpolated_j*DIM + interpolated_i; // normal grid
-                if(clamp)
-                {
-                    min = clamp_min;
-                    max = clamp_max;
-                }else
-                {
-                    max = scalar_draw_hedgehog->get_max();
-                    min = 0;
-                }
-                Field* cur_scalar_draw_hedgehog = buffer[hedgehog_scalar].read(plane);
-                if(cur_scalar_draw_hedgehog == NULL||!draw_slices)
-                        cur_scalar_draw_hedgehog = scalar_draw_hedgehog;
-                QColor colr = set_colormap(cur_scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
-                fftw_real x = vec_scale * vectorial_draw->read_x(idx);
-                fftw_real y = vec_scale * vectorial_draw->read_y(idx);
-                float angle=0;
-                float lenght = sqrt(x*x + y*y);
-                if(lenght != 0)
-                {
-                    x = x/lenght; // normalize
-                    y = y/lenght;
-
-                    angle = atan2 (-x,y) * (180 / M_PI);
-                }
-                if(hedgehog_type == HEDGEHOG_CONE)
-                {
-                    drawCone(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn, colr,plane);
-                }
-                else if(hedgehog_type == HEDGEHOG_ARROW)
-                {
-                    drawArrow(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn,plane);
-                }else if(hedgehog_type == HEDGEHOG_LINE)
-                {
-                    drawLine(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn,plane);
-                }
-              }
+            if(clamp)
+            {
+                min = clamp_min;
+                max = clamp_max;
+            }else
+            {
+                max = scalar_draw->get_max();
+                min = 0;
+            }
+            Field* cur_scalar_draw = buffer[data_type].read(0);
+            if(cur_scalar_draw == NULL||!draw_slices)
+                    cur_scalar_draw = scalar_draw;
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glBegin(GL_TRIANGLES);
+            set_colormap(5,scalar_col, n_colors, 10, 0, hues, sats);
+            /*set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px0, py0, pz0);
+            /*set_colormap(cur_scalar_draw->read(idx1),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px1, py1, pz0);
+            /*set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px2, py2, pz0);
+            /*set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px0, py0, pz0);
+            /*set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px2, py2, pz0);
+            /*set_colormap(cur_scalar_draw->read(idx3),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px3, py3, pz0);
+            glEnd();
+       }
+        glPopMatrix();
+        glLoadIdentity();
+    }
+    else
+    {
+        for(int plane = 0;plane<(num_slices>1 ? num_slices : 1);plane++)
+        {
+            glPushMatrix();
+            glMatrixMode(GL_MODELVIEW);
             if(draw_slices){
                 slice_to_position(plane);
             }
-        }
-        if (draw_smoke)
-        {
-            int idx0, idx1, idx2, idx3;
-            double px0, py0, px1, py1, px2, py2, px3, py3;
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glBegin(GL_TRIANGLES);
-            for (j = 0; j < DIM - 1; j++)            //draw smoke
-            {
-                for (i = 0; i < DIM - 1; i++)
+
+            int        i, j, idx; double px,py;
+            fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
+            fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
+
+            if(draw_streamline || (simulation.get_frozen() && draw_frozenstreamline)) { // streamline
+
+                StreamSurface ss(vector<Point>({Point({10.f, 10.f}), Point({20.f, 10.f})}), simulation.get_v(), DIM, 0.3f, true);
+                //vector<Point> quads = ss.step();
+
+
+                for(int i = 0; i < numStreamline; i++) //get and draw lines
                 {
-                    px0 = wn + (fftw_real)i * wn;
-                    py0 = hn + (fftw_real)j * hn;
-                    idx0 = (j * DIM) + i;
-                    //idx0 = scalar_draw->index1d(i, j);
+                    vector<Point> stream_points = streamlines[i]->line(-1,streamline_lenght); // negative is until border is reached
+                    glBegin(GL_LINE_STRIP);
+                    //glColor3f(1.f,1.f,1.f);
+                    for(int i=0; i < stream_points.size(); i++){
+                        if(clamp)
+                        {
+                            min = clamp_min;
+                            max = clamp_max;
+                        }else
+                        {
+                            max = simulation.get_v()->get_max();
+                            min = 0;
+                        }
 
+                        idx = ((int)(stream_points[i].p[0] + 0.5f)) + ((int)(stream_points[i].p[1] + 0.5f))*DIM;
+                        set_colormap(simulation.get_v()->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
+                        glVertex2f(wn+stream_points[i].p[0]*wn, hn+stream_points[i].p[1]*hn);
+                    }
+                    glEnd();
+                }
 
-                    px1 = wn + (fftw_real)i * wn;
-                    py1 = hn + (fftw_real)(j + 1) * hn;
-                    idx1 = ((j + 1) * DIM) + i;
-                    //idx1 = scalar_draw->index1d(i, j+1);
+            }
+            if (draw_vecs)
+            {
+                //vectorial_draw->rebuild();
 
+                fftw_real  wng = ((fftw_real)winWidth -wn) / (fftw_real)(COL);   // Grid cell width
+                fftw_real  hng = ((fftw_real)winHeight -hn) / (fftw_real)(ROW);  // Grid cell heigh
 
-                    px2 = wn + (fftw_real)(i + 1) * wn;
-                    py2 = hn + (fftw_real)(j + 1) * hn;
-                    idx2 = ((j + 1) * DIM) + (i + 1);
-                    //idx2 = scalar_draw->index1d(i+1, j+1);
-
-
-                    px3 = wn + (fftw_real)(i + 1) * wn;
-                    py3 = hn + (fftw_real)j * hn;
-                    idx3 = (j * DIM) + (i + 1);
-                    //idx3 = scalar_draw->index1d(i+1, j);
-
+                for (i = 0; i < COL; i++)
+                  for (j = 0; j < ROW; j++)
+                  {
+                    int interpolated_j = ((float)j+ jitter_j[i][j])*((float)DIM/(float)ROW) +0.5; // closest neighbor
+                    int interpolated_i = ((float)i+ jitter_i[i][j])*((float)DIM/(float)COL) +0.5;
+                    idx = interpolated_j*DIM + interpolated_i; // normal grid
                     if(clamp)
                     {
                         min = clamp_min;
                         max = clamp_max;
                     }else
                     {
-                        max = scalar_draw->get_max();
+                        max = scalar_draw_hedgehog->get_max();
                         min = 0;
                     }
-                    Field* cur_scalar_draw = buffer[data_type].read(plane);
-                    if(cur_scalar_draw == NULL||!draw_slices)
-                            cur_scalar_draw = scalar_draw;
-                    set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px0, py0);
-                    set_colormap(cur_scalar_draw->read(idx1),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px1, py1);
-                    set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px2, py2);
-                    set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px0, py0);
-                    set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px2, py2);
-                    set_colormap(cur_scalar_draw->read(idx3),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px3, py3);
+                    Field* cur_scalar_draw_hedgehog = buffer[hedgehog_scalar].read(plane);
+                    if(cur_scalar_draw_hedgehog == NULL||!draw_slices)
+                            cur_scalar_draw_hedgehog = scalar_draw_hedgehog;
+                    QColor colr = set_colormap(cur_scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
+                    fftw_real x = vec_scale * vectorial_draw->read_x(idx);
+                    fftw_real y = vec_scale * vectorial_draw->read_y(idx);
+                    float angle=0;
+                    float lenght = sqrt(x*x + y*y);
+                    if(lenght != 0)
+                    {
+                        x = x/lenght; // normalize
+                        y = y/lenght;
 
+                        angle = atan2 (-x,y) * (180 / M_PI);
+                    }
+                    if(hedgehog_type == HEDGEHOG_CONE)
+                    {
+                        drawCone(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn, colr,plane);
+                    }
+                    else if(hedgehog_type == HEDGEHOG_ARROW)
+                    {
+                        drawArrow(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn,plane);
+                    }else if(hedgehog_type == HEDGEHOG_LINE)
+                    {
+                        drawLine(angle,lenght,wn+(i + jitter_i[i][j])*wng,hn+(j + jitter_j[i][j])*hng,10,wn,hn,plane);
+                    }
+                  }
+                if(draw_slices){
+                    slice_to_position(plane);
+                }
+            }
+            if (draw_smoke)
+            {
+                int idx0, idx1, idx2, idx3;
+                double px0, py0, px1, py1, px2, py2, px3, py3;
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glBegin(GL_TRIANGLES);
+                for (j = 0; j < DIM - 1; j++)            //draw smoke
+                {
+                    for (i = 0; i < DIM - 1; i++)
+                    {
+                        px0 = wn + (fftw_real)i * wn;
+                        py0 = hn + (fftw_real)j * hn;
+                        idx0 = (j * DIM) + i;
+                        //idx0 = scalar_draw->index1d(i, j);
+
+
+                        px1 = wn + (fftw_real)i * wn;
+                        py1 = hn + (fftw_real)(j + 1) * hn;
+                        idx1 = ((j + 1) * DIM) + i;
+                        //idx1 = scalar_draw->index1d(i, j+1);
+
+
+                        px2 = wn + (fftw_real)(i + 1) * wn;
+                        py2 = hn + (fftw_real)(j + 1) * hn;
+                        idx2 = ((j + 1) * DIM) + (i + 1);
+                        //idx2 = scalar_draw->index1d(i+1, j+1);
+
+
+                        px3 = wn + (fftw_real)(i + 1) * wn;
+                        py3 = hn + (fftw_real)j * hn;
+                        idx3 = (j * DIM) + (i + 1);
+                        //idx3 = scalar_draw->index1d(i+1, j);
+
+                        if(clamp)
+                        {
+                            min = clamp_min;
+                            max = clamp_max;
+                        }else
+                        {
+                            max = scalar_draw->get_max();
+                            min = 0;
+                        }
+                        Field* cur_scalar_draw = buffer[data_type].read(plane);
+                        if(cur_scalar_draw == NULL||!draw_slices)
+                                cur_scalar_draw = scalar_draw;
+                        set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px0, py0);
+                        set_colormap(cur_scalar_draw->read(idx1),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px1, py1);
+                        set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px2, py2);
+                        set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px0, py0);
+                        set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px2, py2);
+                        set_colormap(cur_scalar_draw->read(idx3),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px3, py3);
+
+                    }
                 }
             }
             glEnd();
 
             //printf("%f %f \n", scalar_draw->get_min(), scalar_draw->get_max());
             //printf("%f %f \n", simulation.get_f()->get_min(), simulation.get_f()->get_max());
-
-
-
-
+            glPopMatrix();
+            glLoadIdentity();
+            if(!draw_slices) break;
         }
-        glPopMatrix();
-        glLoadIdentity();
-        if(!draw_slices) break;
     }
     glFlush();
 }
@@ -385,9 +451,10 @@ void MyGLWidget::do_one_simulation_step(bool update)
         timestep_count++;
         if(timestep_count >= timesteps_each_slice)
         {
-            buffer[DATA_DENSITY].append();
-            buffer[DATA_VELOCITY].append();
-            buffer[DATA_FORCEFIELD].append();
+            //buffer[DATA_DENSITY].append();
+            //buffer[DATA_VELOCITY].append();
+            //buffer[DATA_FORCEFIELD].append();
+            buffer[data_type].append();
             timestep_count = 0;
         }
     }
@@ -420,6 +487,11 @@ void MyGLWidget::drawHedgehogs(bool new_draw_vecs)
 void MyGLWidget::drawSlices(bool new_draw_slices)
 {
     draw_slices = new_draw_slices;
+}
+
+void MyGLWidget::drawStreamSurface(bool new_draw_surface)
+{
+    draw_streamsurface = new_draw_surface;
 }
 
 void MyGLWidget::setClamp(bool new_clamp)
@@ -692,7 +764,7 @@ void MyGLWidget::update_streamline_matrix()
             x = (rand()%500)/10.0;
             y = (rand()%500)/10.0;
         }
-        streamlines[i] = new StreamLine(x,y, simulation.get_v(), DIM);
+        streamlines[i] = new StreamLine(x,y, simulation.get_v(), DIM, 0.3f, true);
 
     }
 }

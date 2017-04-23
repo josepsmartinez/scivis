@@ -15,6 +15,7 @@ protected:
 public:
     fftw_real* field;
 
+    ~Field();
     Field();
     Field(const Field &f);
     void deepcopy(Field *f);

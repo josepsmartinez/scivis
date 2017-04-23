@@ -48,6 +48,8 @@ public slots:
 
     void drawHedgehogs(bool);
 
+    void drawStreamSurface(bool);
+
     void setSeparateStreamlines(bool);
 
     void setDataAlpha(bool);
@@ -130,6 +132,7 @@ private:
     bool   draw_vecs;            //draw the vector field or not
     bool draw_slices;
     bool draw_streamline;
+    bool draw_streamsurface;
     bool draw_frozenstreamline;
     bool separate_streamlines;
     int streamline_lenght;

@@ -2,6 +2,11 @@
 
 
 
+Field::~Field()
+{
+    delete &field;
+}
+
 Field::Field()
 {
 
@@ -19,11 +24,13 @@ Field::Field(const Field &f)
 
 void Field::deepcopy(Field *f)
 {
-    //memcpy(field, f->field, sizeof(field));
+    //memcpy(field, f->field, f->dim_size*sizeof(fftw_real));
+
     for(int i = 0;i<dim_size*dim_size;i++)
     {
         field[i] = f->field[i];
     }
+
     min=f->min; max=f->max;
 }
 

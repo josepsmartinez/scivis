@@ -243,7 +243,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Colormap">
          <attribute name="title">
@@ -271,6 +271,9 @@
             <height>26</height>
            </rect>
           </property>
+          <property name="currentText">
+           <string>rainbow</string>
+          </property>
           <item>
            <property name="text">
             <string>black&amp;white</string>
@@ -283,12 +286,12 @@
           </item>
           <item>
            <property name="text">
-            <string>rainbow2</string>
+            <string>rainbow</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>rainbow</string>
+            <string>rainbow2</string>
            </property>
           </item>
          </widget>
@@ -909,6 +912,24 @@
           </property>
           <property name="text">
            <string>Streamlines lenght</string>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="StreamSurface">
+         <attribute name="title">
+          <string>Stream Surface</string>
+         </attribute>
+         <widget class="QCheckBox" name="drawStreamsurface">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>121</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Draw Stream Surface</string>
           </property>
          </widget>
         </widget>

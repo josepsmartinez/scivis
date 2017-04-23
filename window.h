@@ -107,6 +107,9 @@ private slots:
 
     void on_slice_timestep_valueChanged(int value);
 
+
+    void on_drawStreamsurface_clicked(bool checked);
+
 public:
     Ui::Window *ui;
 };

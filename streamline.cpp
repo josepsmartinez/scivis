@@ -17,8 +17,8 @@ int StreamLine::get_ix()
 
 
 // CONSTRUCTORS
-StreamLine::StreamLine(float i, float j, vectorialField* srcv, int dim)
-    : start(2), v(srcv), dim(dim), steps(0), current(2)
+StreamLine::StreamLine(float i, float j, vectorialField* srcv, int dim, fftw_real dt=0.3f, bool norm=true)
+    : start(2), v(srcv), dim(dim), steps(0), current(2), dt(dt), normalize(norm)
 {
     /*
      * here we can decide whether the stream follows
@@ -46,7 +46,7 @@ StreamLine &StreamLine::operator++()
     int ix = get_ix();
 
     Point shift({v->read_x(ix), v->read_y(ix)});
-    shift.scalar_mul(1/shift.norm());
+    if(normalize) shift.scalar_mul(1/shift.norm());
     shift.scalar_mul(dt);
 
     current.pointwise_sum({shift.p[0], shift.p[1]});
@@ -90,6 +90,7 @@ vector<Point> StreamLine::line(int size, int lenght = 500)
 {
     current = start;
     end = false;
+    steps=0;
     vector<Point> l;
     if(size<0)
     {
@@ -107,6 +108,11 @@ vector<Point> StreamLine::line(int size, int lenght = 500)
         }
     }
     return l;
+}
+
+Point3D StreamLine::point3D(fftw_real dz)
+{
+    return Point3D({current.p[0], current.p[1], steps*dz});
 }
 
 
@@ -170,4 +176,28 @@ Point::pointwise_sum(vector<fftw_real> src)
     if (src.size() == dim){
         for(int i=0; i<dim; i++) p[i] += src[i];
     }
+}
+
+Point3D::Point3D()
+    : Point(3)
+{
+
+}
+
+Point3D::Point3D(vector<fftw_real> src)
+    : Point(3)
+{
+    if (src.size() == 3) initialize(src);
+}
+
+Point3D::Point3D(const Point &src)
+    : Point(3)
+{
+    if (src.p.size()==3) initialize(src.p);
+}
+
+Point3D::Point3D(const Point3D &src)
+    : Point(3)
+{
+    initialize(src.p);
 }

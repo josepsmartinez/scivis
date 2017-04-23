@@ -13,7 +13,6 @@ Color::Color(float r, float g, float b)
     : r(r), g(g), b(b)
 {
     update_hsv();
-    //s*=2;
     load_hsv();
 }
 

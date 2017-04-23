@@ -272,3 +272,9 @@ void Window::on_slice_timestep_valueChanged(int value)
 {
     ui->myGLWidget->setSliceTimestep(value);
 }
+
+
+void Window::on_drawStreamsurface_clicked(bool checked)
+{
+    ui->myGLWidget->drawStreamSurface(checked);
+}
