@@ -153,7 +153,8 @@ SOURCES += \
     fftw-2.1.3/rfftw/rplanner.c \
     fields.cpp \
     streamline.cpp \
-    timebuffer.cpp
+    timebuffer.cpp \
+    streamsurface.cpp
 
 HEADERS += \
     window.h \
@@ -167,7 +168,8 @@ HEADERS += \
     fftw-2.1.3/rfftw/rfftw.h \
     fields.h \
     streamline.h \
-    timebuffer.h
+    timebuffer.h \
+    streamsurface.h
 
 INCLUDEPATH += $$PWD/fftw-2.1.3/fftw $$PWD/fftw-2.1.3/rfftw
 

@@ -11,10 +11,10 @@ class StreamSurface : public iterator<input_iterator_tag, int>
     vector<StreamLine> current_line;    // a collection of 3d points (forming a 3d polyline) that can stream
     int size;                           // collection size
     int steps;                          // how many steps happened (iteration conditions)
-    const fftw_real dz = 1.f;           // how much every streamline step advances in the z-axis
-
-    Polyline3D current_polyline();   // transform the 2d streamline points into a 3d polyline
+    fftw_real dz = 1.f;           // how much every streamline step advances in the z-axis
 public:
+    Polyline3D current_polyline();   // transform the 2d streamline points into a 3d polyline
+
     StreamSurface(vector<Point>, vectorialField*, int, fftw_real, bool);
 
 
@@ -29,7 +29,7 @@ public:
 
     // output
     Polyline3D operator*();
-    vector<Polyline3D> step();            // advances the polyline, returning the generated quads
+    Polyline3D step();            // advances the polyline, returning the generated quads
 
 
 

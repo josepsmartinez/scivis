@@ -243,7 +243,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="Colormap">
          <attribute name="title">
@@ -272,7 +272,7 @@
            </rect>
           </property>
           <property name="currentText">
-           <string>rainbow</string>
+           <string>black&amp;white</string>
           </property>
           <item>
            <property name="text">
@@ -924,7 +924,7 @@
            <rect>
             <x>10</x>
             <y>10</y>
-            <width>121</width>
+            <width>131</width>
             <height>17</height>
            </rect>
           </property>
@@ -932,6 +932,335 @@
            <string>Draw Stream Surface</string>
           </property>
          </widget>
+         <widget class="QPushButton" name="draw_new_streamline">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>80</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Draw new</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="numStreamSurface">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>20</y>
+            <width>160</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>50</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QSlider" name="totalStreamsurfaceTimestep">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>50</y>
+            <width>160</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>30</number>
+          </property>
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QSlider" name="timestepBetweensurfaces">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>80</y>
+            <width>160</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>30</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_18">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>0</y>
+            <width>91</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of lines</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_19">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>30</y>
+            <width>151</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Total number of timesteps</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_20">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>60</y>
+            <width>171</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Timesteps each new surface point</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="sizestepsurface">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>110</y>
+            <width>160</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>200</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_21">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>90</y>
+            <width>171</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Distance for each step</string>
+          </property>
+         </widget>
+         <widget class="QSlider" name="y1">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>100</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fluid viscosity&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>490</number>
+          </property>
+          <property name="value">
+           <number>200</number>
+          </property>
+          <property name="sliderPosition">
+           <number>200</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QSlider" name="y2">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>100</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fluid viscosity&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>490</number>
+          </property>
+          <property name="value">
+           <number>290</number>
+          </property>
+          <property name="sliderPosition">
+           <number>290</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QSlider" name="x2">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>70</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fluid viscosity&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>490</number>
+          </property>
+          <property name="value">
+           <number>290</number>
+          </property>
+          <property name="sliderPosition">
+           <number>290</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QSlider" name="x1">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fluid viscosity&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>490</number>
+          </property>
+          <property name="value">
+           <number>200</number>
+          </property>
+          <property name="sliderPosition">
+           <number>200</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_22">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>91</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>x1</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_23">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>91</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>y1</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_24">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>91</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>x2</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_25">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>91</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>y2</string>
+          </property>
+         </widget>
+         <zorder>drawStreamsurface</zorder>
+         <zorder>draw_new_streamline</zorder>
+         <zorder>label_18</zorder>
+         <zorder>label_19</zorder>
+         <zorder>label_20</zorder>
+         <zorder>label_21</zorder>
+         <zorder>label_22</zorder>
+         <zorder>label_23</zorder>
+         <zorder>label_24</zorder>
+         <zorder>label_25</zorder>
+         <zorder>numStreamSurface</zorder>
+         <zorder>totalStreamsurfaceTimestep</zorder>
+         <zorder>timestepBetweensurfaces</zorder>
+         <zorder>sizestepsurface</zorder>
+         <zorder>x2</zorder>
+         <zorder>y2</zorder>
+         <zorder>x1</zorder>
+         <zorder>y1</zorder>
         </widget>
        </widget>
        <widget class="QCheckBox" name="checkBox">

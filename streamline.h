@@ -39,18 +39,20 @@ public:
 class StreamLine : public std::iterator<std::input_iterator_tag, int>
 {
     // internal parameters
-    Point start;
     vectorialField* v;
     int dim;
     int steps;
     fftw_real dt;
     bool end = false;
     bool normalize = true;
-    Point current;
 
     void load_ix(int);
     int get_ix();
 public:
+    Point current;
+    Point start;
+
+
     StreamLine(float, float, vectorialField*, int, fftw_real, bool);    // constructor given an starting point, an field, its dimension, dt and wether the shift must be normalized
     StreamLine(const StreamLine& mit);     // copy constructor
 

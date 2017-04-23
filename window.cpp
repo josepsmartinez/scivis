@@ -278,3 +278,50 @@ void Window::on_drawStreamsurface_clicked(bool checked)
 {
     ui->myGLWidget->drawStreamSurface(checked);
 }
+
+void Window::on_draw_new_streamline_clicked()
+{
+    ui->drawStreamsurface->setChecked(true);
+    ui->myGLWidget->drawStreamSurface(true);
+    ui->myGLWidget->newStreamSurface();
+}
+
+void Window::on_numStreamSurface_valueChanged(int value)
+{
+    ui->myGLWidget->Surfacenum(value);
+}
+
+void Window::on_totalStreamsurfaceTimestep_valueChanged(int value)
+{
+    ui->myGLWidget->SurfacetotalTimestep(value);
+}
+
+void Window::on_timestepBetweensurfaces_valueChanged(int value)
+{
+    ui->myGLWidget->SurfaceBetweenTimestep(value);
+}
+
+void Window::on_sizestepsurface_valueChanged(int value)
+{
+    ui->myGLWidget->setDT(2*(float)value/(float)ui->sizestepsurface->maximum());
+}
+
+void Window::on_x1_valueChanged(int value)
+{
+    ui->myGLWidget->setx1((float)value/10.f);
+}
+
+void Window::on_y1_valueChanged(int value)
+{
+    ui->myGLWidget->sety1((float)value/10.f);
+}
+
+void Window::on_x2_valueChanged(int value)
+{
+    ui->myGLWidget->setx2((float)value/10.f);
+}
+
+void Window::on_y2_valueChanged(int value)
+{
+    ui->myGLWidget->sety2((float)value/10.f);
+}

@@ -110,6 +110,24 @@ private slots:
 
     void on_drawStreamsurface_clicked(bool checked);
 
+    void on_draw_new_streamline_clicked();
+
+    void on_numStreamSurface_valueChanged(int value);
+
+    void on_totalStreamsurfaceTimestep_valueChanged(int value);
+
+    void on_timestepBetweensurfaces_valueChanged(int value);
+
+    void on_sizestepsurface_valueChanged(int value);
+
+    void on_x1_valueChanged(int value);
+
+    void on_y1_valueChanged(int value);
+
+    void on_x2_valueChanged(int value);
+
+    void on_y2_valueChanged(int value);
+
 public:
     Ui::Window *ui;
 };

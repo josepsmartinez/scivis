@@ -73,6 +73,19 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     buffer[DATA_FORCEFIELD].initialize(num_slices,simulation.get_f(),DIM);
     buffer[DATA_VELOCITY].initialize(num_slices,simulation.get_v(),DIM);
 
+    numStreamSurface = 10;
+    timesteps_surface = 100;
+    timesteps_between_surface = 5;
+    streamsurface.resize(0);
+    streamsurface_color.resize(0);
+    surface_ready = false;
+    dt = 0.5;
+    initial_x1 = 20;
+    initial_y1 = 20;
+    initial_x2 = 29;
+    initial_y2 = 29;
+
+
     timestep(6000);
 }
 
@@ -114,57 +127,58 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     if(draw_streamsurface)
     {
         glPushMatrix();
-        float halfw = winWidth/2;
-        float halfh =winHeight/2;
-        //slice_to_position(num_slices/2);
-        glScalef(halfw,halfh,1);
 
-        int idx0, idx1, idx2, idx3;
+        slice_to_position(num_slices/2);
+        glTranslatef(0,0,-winHeight/2);
+        glScalef(winWidth/DIM,(winHeight)/((float)timesteps_surface/(float)timesteps_between_surface),winHeight/DIM);
+
         double px0, py0, pz0, px1, py1, pz1, px2, py2, pz2, px3, py3, pz3;
+        QColor p0c, p1c, p2c, p3c;
         int quads = 2;
-        for(int i = 0;i < quads;i++)
+        for(int i = 0;i < streamsurface.size() - 1;i++)
         {
-            px0=0+1*i;
-            py0=0+1*i;
-            pz0=0;
-            px1=1+1*i;
-            py1=0+1*i;
-            pz1=1;
-            px2=1+1*i;
-            py2=1+1*i;
-            pz2=1;
-            px3=0+1*i;
-            py3=1+1*i;
-            pz3=1;
-
-            idx0=1;
-            idx1=2;
-            idx2=3;
-            idx3=4;
-
-            if(clamp)
+            for(int j = 0; j <streamsurface[i].size() - 1;j++)
             {
-                min = clamp_min;
-                max = clamp_max;
-            }else
-            {
-                max = scalar_draw->get_max();
-                min = 0;
+                px0=streamsurface[i][j].p[0];
+                py0=streamsurface[i][j].p[1];
+                pz0=streamsurface[i][j].p[2];
+                px1=streamsurface[i+1][j].p[0];
+                py1=streamsurface[i+1][j].p[1];
+                pz1=streamsurface[i+1][j].p[2];
+                px2=streamsurface[i+1][j+1].p[0];
+                py2=streamsurface[i+1][j+1].p[1];
+                pz2=streamsurface[i+1][j+1].p[2];
+                px3=streamsurface[i][j+1].p[0];
+                py3=streamsurface[i][j+1].p[1];
+                pz3=streamsurface[i][j+1].p[2];
+
+                p0c=streamsurface_color[i][j];
+                p1c=streamsurface_color[i+1][j];
+                p2c=streamsurface_color[i+1][j+1];
+                p3c=streamsurface_color[i][j+1];
+
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                glBegin(GL_TRIANGLES);
+                //set_colormap(5,scalar_col, n_colors, 10, 0, hues, sats);
+                glColor3f(p0c.redF(),p0c.greenF(),p0c.blueF());    glVertex3f(px0, pz0, py0);
+                glColor3f(p1c.redF(),p1c.greenF(),p1c.blueF());    glVertex3f(px1, pz1, py1);
+                glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());    glVertex3f(px2, pz2, py2);
+                glColor3f(p0c.redF(),p0c.greenF(),p0c.blueF());    glVertex3f(px0, pz0, py0);
+                glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());    glVertex3f(px2, pz2, py2);
+                glColor3f(p3c.redF(),p3c.greenF(),p3c.blueF());    glVertex3f(px3, pz3, py3);
+                glEnd();
             }
-            Field* cur_scalar_draw = buffer[data_type].read(0);
-            if(cur_scalar_draw == NULL||!draw_slices)
-                    cur_scalar_draw = scalar_draw;
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glBegin(GL_TRIANGLES);
-            set_colormap(5,scalar_col, n_colors, 10, 0, hues, sats);
-            /*set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px0, py0, pz0);
-            /*set_colormap(cur_scalar_draw->read(idx1),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px1, py1, pz0);
-            /*set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px2, py2, pz0);
-            /*set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px0, py0, pz0);
-            /*set_colormap(cur_scalar_draw->read(idx2),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px2, py2, pz0);
-            /*set_colormap(cur_scalar_draw->read(idx3),scalar_col, n_colors, max, min, hues, sats);*/    glVertex3f(px3, py3, pz0);
-            glEnd();
        }
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //plane
+        glBegin(GL_TRIANGLES);
+        //set_colormap(5,scalar_col, n_colors, 10, 0, hues, sats);
+        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(0, 0, 0);
+        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(0, 0, 49);
+        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(49, 0, 49);
+        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(0, 0, 0);
+        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(49, 0, 49);
+        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(49, 0, 0);
+        glEnd();
         glPopMatrix();
         glLoadIdentity();
     }
@@ -183,11 +197,6 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
             fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
 
             if(draw_streamline || (simulation.get_frozen() && draw_frozenstreamline)) { // streamline
-
-                StreamSurface ss(vector<Point>({Point({10.f, 10.f}), Point({20.f, 10.f})}), simulation.get_v(), DIM, 0.3f, true);
-                //vector<Point> quads = ss.step();
-
-
                 for(int i = 0; i < numStreamline; i++) //get and draw lines
                 {
                     vector<Point> stream_points = streamlines[i]->line(-1,streamline_lenght); // negative is until border is reached
@@ -440,7 +449,7 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void MyGLWidget::do_one_simulation_step(bool update)
 {
-    if (!simulation.get_frozen())
+    if (!simulation.get_frozen() && !draw_streamsurface)
     {
         simulation.get_rho()->reset_limits();
         simulation.get_f()->reset_limits();
@@ -451,12 +460,93 @@ void MyGLWidget::do_one_simulation_step(bool update)
         timestep_count++;
         if(timestep_count >= timesteps_each_slice)
         {
-            //buffer[DATA_DENSITY].append();
-            //buffer[DATA_VELOCITY].append();
-            //buffer[DATA_FORCEFIELD].append();
-            buffer[data_type].append();
+            buffer[DATA_DENSITY].append();
+            buffer[DATA_VELOCITY].append();
+            buffer[DATA_FORCEFIELD].append();
             timestep_count = 0;
         }
+    }else if (draw_streamsurface && !surface_ready)
+    {
+        streamsurface.resize(0);
+        streamsurface_color.resize(0);
+        int added = 0;
+
+        std::vector<std::vector<fftw_real>> values;
+
+        std::vector<Point> line;
+        float diffx =(initial_x2 - initial_x1)/(float)(numStreamSurface-1);
+        float diffy =(initial_y2 - initial_y1)/(float)(numStreamSurface-1);
+        for(int i=0;i<numStreamSurface;i++)//gen initial line
+        {
+            float x, y;
+            x = initial_x1+i*diffx;
+            y = initial_y1+i*diffy;
+            line.push_back(Point({x,y}));
+        }
+
+        delete surfaceclass;
+        surfaceclass = new StreamSurface(line,simulation.get_v(),DIM,dt,true);
+
+
+        streamsurface.push_back(surfaceclass->current_polyline());// get first line
+        std::vector<fftw_real> curval;
+        for(int i=0;i<streamsurface.back().size();i++)//save values
+        {
+            int a =streamsurface[0][0].p[0];
+            int idx = ((int)(streamsurface[added][i].p[0] + 0.5f)) + ((int)(streamsurface[added][i].p[1] + 0.5f))*DIM;
+            curval.push_back(simulation.get_v()->read(idx));
+        }
+        values.push_back(curval);
+        added++;
+
+        for(int i = 0;i<timesteps_surface;i++)
+        {
+            simulation.get_rho()->reset_limits();
+            simulation.get_f()->reset_limits();
+            simulation.get_v()->reset_limits();
+            simulation.set_forces(DIM);
+            simulation.solve(DIM);
+            simulation.diffuse_matter(DIM);
+            timestep_count++;
+            if(timestep_count >= timesteps_each_slice)
+            {
+                buffer[DATA_DENSITY].append();
+                buffer[DATA_VELOCITY].append();
+                buffer[DATA_FORCEFIELD].append();
+                timestep_count = 0;
+            }
+            if(i%timesteps_between_surface == 0){
+                streamsurface.push_back(surfaceclass->step());
+                std::vector<fftw_real> curval;
+                for(int i=0;i<streamsurface.back().size();i++)
+                {
+                    int idx = ((int)(streamsurface[added][i].p[0] + 0.5f)) + ((int)(streamsurface[added][i].p[1] + 0.5f))*DIM;
+                    curval.push_back(simulation.get_v()->read(idx));
+                }
+                values.push_back(curval);
+                added++;
+            }
+        }
+        if(clamp)
+        {
+            min = clamp_min;
+            max = clamp_max;
+        }else
+        {
+            max = simulation.get_v()->get_max();
+            min = 0;
+        }
+        for(int i =0;i<values.size();i++) // save colors
+        {
+            std::vector<QColor> curcolor;
+            for(int j = 0; j < values[i].size();j++)
+            {
+                curcolor.push_back(set_colormap(values[i][j],scalar_col, n_colors, max, min, hues, sats));
+            }
+            streamsurface_color.push_back(curcolor);
+        }
+
+        surface_ready = true;
     }
     if(update){
         updateGL();
@@ -492,6 +582,7 @@ void MyGLWidget::drawSlices(bool new_draw_slices)
 void MyGLWidget::drawStreamSurface(bool new_draw_surface)
 {
     draw_streamsurface = new_draw_surface;
+    surface_ready = false;
 }
 
 void MyGLWidget::setClamp(bool new_clamp)
@@ -786,3 +877,45 @@ void MyGLWidget::update_jitter_matrix()
             jitter_j[i][j] = randomness* (((rand()%100) - 50)/100.0);
         }
 }
+
+
+void MyGLWidget::newStreamSurface()
+{
+   surface_ready = false;
+}
+
+void MyGLWidget::Surfacenum(int n)
+{
+   numStreamSurface = n;
+}
+void MyGLWidget::SurfacetotalTimestep(int n)
+{
+   timesteps_surface = n;
+}
+void MyGLWidget::SurfaceBetweenTimestep(int n)
+{
+   timesteps_between_surface = n;
+}
+
+void MyGLWidget::setDT(fftw_real n)
+{
+   dt = n;
+}
+
+void MyGLWidget::setx1(float n)
+{
+   initial_x1 = n;
+}
+void MyGLWidget::setx2(float n)
+{
+   initial_x2 = n;
+}
+void MyGLWidget::sety1(float n)
+{
+   initial_y1 = n;
+}
+void MyGLWidget::sety2(float n)
+{
+   initial_y2 = n;
+}
+

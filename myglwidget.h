@@ -9,6 +9,7 @@
 #include "simulation.h"
 #include "streamline.h"
 #include "timebuffer.h"
+#include "streamsurface.h"
 #include <vector>
 
 
@@ -104,6 +105,12 @@ public slots:
 
     void drawStreamlines(QString draw);
 
+    void newStreamSurface();
+
+    void Surfacenum(int);
+    void SurfacetotalTimestep(int);
+    void SurfaceBetweenTimestep(int);
+
 
     float get_max();
     float get_min();
@@ -111,6 +118,13 @@ public slots:
     void update_jitter_matrix();
 
     void update_streamline_matrix();
+
+    void setDT(fftw_real);
+    void setx1(float);
+    void setx2(float);
+    void sety1(float);
+    void sety2(float);
+
 
 
 
@@ -157,6 +171,7 @@ private:
     fftw_real  cell_width;
     fftw_real  cell_height;
 
+
     float alpha;
     bool data_alpha;
     int rotation_angle;
@@ -171,6 +186,18 @@ private:
     vectorialField* vectorial_draw;
 
     vector<TimeBuffer> buffer;
+
+    int numStreamSurface;
+    int timesteps_surface;
+    int timesteps_between_surface;
+    bool surface_ready;
+    fftw_real dt;
+    float initial_x1, initial_x2, initial_y1, initial_y2;
+
+
+    StreamSurface* surfaceclass;
+    std::vector<Polyline3D> streamsurface;
+    std::vector<std::vector<QColor>> streamsurface_color;
 };
 
 #endif // MYGLWIDGET_H

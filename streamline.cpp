@@ -30,10 +30,11 @@ StreamLine::StreamLine(float i, float j, vectorialField* srcv, int dim, fftw_rea
     */
     //load_ix(ix);
     start = Point(vector<fftw_real>{i, j});
+    current = start;
 }
 
 StreamLine::StreamLine(const StreamLine &mit)
-    : v(mit.v), dim(mit.dim), steps(mit.steps), dt(mit.dt), start(mit.start), current(2)
+    : v(mit.v), dim(mit.dim), steps(mit.steps), dt(mit.dt), start(mit.start), current(mit.current)
 {
     //for(int i=0; i<mit.points.size();i++) points[i] = mit.points[i];
 }
@@ -43,17 +44,22 @@ StreamLine &StreamLine::operator++()
 {
 
     //Point point = points.back();
-    int ix = get_ix();
+    if(!end)
+    {
+        int ix = get_ix();
 
-    Point shift({v->read_x(ix), v->read_y(ix)});
-    if(normalize) shift.scalar_mul(1/shift.norm());
-    shift.scalar_mul(dt);
+        Point shift({v->read_x(ix), v->read_y(ix)});
+        if(normalize) shift.scalar_mul(1/shift.norm());
+        shift.scalar_mul(dt);
 
-    current.pointwise_sum({shift.p[0], shift.p[1]});
-    if(current.p[0]>50 || current.p[1] > 50 || current.p[0]<0 || current.p[1]<0) end = true;
+        current.pointwise_sum({shift.p[0], shift.p[1]});
+        if(current.p[0]>49 || current.p[1]>49 || current.p[0]<0 || current.p[1]<0)
+            end = true;
+        steps++;
+
+    }
     //points.push_back(point);
 
-    steps++;
 }
 
 void StreamLine::change_field(vectorialField* nv)
