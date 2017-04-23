@@ -130,7 +130,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
 
         slice_to_position(num_slices/2);
         glTranslatef(0,0,-winHeight/2);
-        glScalef(winWidth/DIM,(winHeight)/((float)timesteps_surface/(float)timesteps_between_surface),winHeight/DIM);
+        glScalef(winWidth/DIM,(winHeight)/(((float)timesteps_surface-1)/(float)timesteps_between_surface),winHeight/DIM);
 
         double px0, py0, pz0, px1, py1, pz1, px2, py2, pz2, px3, py3, pz3;
         QColor p0c, p1c, p2c, p3c;
