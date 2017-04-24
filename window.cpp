@@ -28,6 +28,9 @@ void Window::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Escape)
         close();
+    else if (e->key() == Qt::Key_Space){
+        ui->freezeCheckbox->click();
+    }
     else
         QWidget::keyPressEvent(e);
 }
@@ -337,5 +340,17 @@ void Window::on_reset_simulation_clicked()
 
 void Window::on_checkBox_3_clicked(bool checked)
 {
+    ui->interpolate_hedg->setChecked(checked);
     ui->myGLWidget->setInterpolation(checked);
+}
+
+void Window::on_interpolate_hedg_clicked(bool checked)
+{
+    ui->myGLWidget->setInterpolation(checked);
+    ui->checkBox_3->setChecked(checked);
+}
+
+void Window::on_drawStreamsurface_2_clicked(bool checked)
+{
+    ui->myGLWidget->setGrid(checked);
 }

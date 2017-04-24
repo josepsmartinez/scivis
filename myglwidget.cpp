@@ -88,6 +88,7 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     initial_y1 = 20;
     initial_x2 = 29;
     initial_y2 = 29;
+    grid = false;
 
 
     timestep(6000);
@@ -130,11 +131,31 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
 
     if(draw_streamsurface)
     {
+        //bool light = false;
         glPushMatrix();
+        glMatrixMode(GL_MODELVIEW);
 
-        slice_to_position(num_slices/2);
-        glTranslatef(0,0,-winHeight/2);
+        //if(light){
+        //    glEnable(GL_LIGHTING);
+        //    glEnable(GL_LIGHT0);
+        //}
+
+
+        float halfw = winWidth/2;
+        float halfh =winHeight/2;
+        glTranslatef(halfw,halfh,0);
+        glRotatef(15,1,0,0);
+        glRotatef(-45 + rotation_angle,0,1,0);
+        glScalef(0.7f,0.7f,0.7f);
+        glTranslatef(-halfw,-halfh,0);
         glScalef(winWidth/DIM,(winHeight)/(((float)timesteps_surface-1)/(float)timesteps_between_surface),winHeight/DIM);
+        glTranslatef(0,0,-DIM/2);
+
+        glColor4f(1, 1, 1, 1); // Set current color to white
+        GLfloat lightpos[] = {0., 0., 50, 0.};
+        GLfloat LightDiffuse[]=	{ 1.f, 1.f, 1.f, 1.0f };
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
+        glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 
         double px0, py0, pz0, px1, py1, pz1, px2, py2, pz2, px3, py3, pz3;
         QColor p0c, p1c, p2c, p3c;
@@ -163,26 +184,83 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
 
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 glBegin(GL_TRIANGLES);
-                //set_colormap(5,scalar_col, n_colors, 10, 0, , sats);
-                glColor3f(p0c.redF(),p0c.greenF(),p0c.blueF());    glVertex3f(px0, pz0, py0);
-                glColor3f(p1c.redF(),p1c.greenF(),p1c.blueF());    glVertex3f(px1, pz1, py1);
-                glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());    glVertex3f(px2, pz2, py2);
-                glColor3f(p0c.redF(),p0c.greenF(),p0c.blueF());    glVertex3f(px0, pz0, py0);
-                glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());    glVertex3f(px2, pz2, py2);
-                glColor3f(p3c.redF(),p3c.greenF(),p3c.blueF());    glVertex3f(px3, pz3, py3);
+                /*if(light){
+                    GLfloat col[] = {p0c.redF(), p0c.greenF(), p0c.blueF(), 1};
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);
+                }else*/
+                    glColor3f(p0c.redF(),p0c.greenF(),p0c.blueF());
+                glVertex3f(px0, pz0, py0);
+                /*if(light){
+                    GLfloat col[] = {p1c.redF(), p1c.greenF(), p1c.blueF(), 1};
+                    glMaterialfv(GL_FRONT_AND_BACK , GL_DIFFUSE, col);
+                }else*/
+                    glColor3f(p1c.redF(),p1c.greenF(),p1c.blueF());
+                glVertex3f(px1, pz1, py1);
+                /*if(light){
+                    GLfloat col[] = {p2c.redF(), p2c.greenF(), p2c.blueF(), 1};
+                    glMaterialfv(GL_FRONT_AND_BACK , GL_DIFFUSE, col);
+                }else*/
+                    glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());
+                glVertex3f(px2, pz2, py2);
+                /*if(light){
+                    GLfloat col[] = {p0c.redF(), p0c.greenF(), p0c.blueF(), 1};
+                    glMaterialfv(GL_FRONT_AND_BACK , GL_DIFFUSE, col);
+                }else*/
+                    glColor3f(p0c.redF(),p0c.greenF(),p0c.blueF());
+                glVertex3f(px0, pz0, py0);
+                /*if(light){
+                    GLfloat col[] = {p2c.redF(), p2c.greenF(), p2c.blueF(), 1};
+                    glMaterialfv(GL_FRONT_AND_BACK , GL_DIFFUSE, col);
+                }else*/
+                    glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());
+                glVertex3f(px2, pz2, py2);
+                /*if(light){
+                    GLfloat col[] = {p3c.redF(), p3c.greenF(), p3c.blueF(), 1};
+                    glMaterialfv(GL_FRONT_AND_BACK , GL_DIFFUSE, col);
+                }else*/
+                    glColor3f(p3c.redF(),p3c.greenF(),p3c.blueF());
+                glVertex3f(px3, pz3, py3);
                 glEnd();
+                //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                if(grid){
+                    glBegin(GL_LINES);
+                    /*if(light){
+                        GLfloat col[] = {0.f, 0.f, 0.f, 1};
+                        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);
+                    }else*/
+                        glColor3f(0.f,0.f,0.f);
+                    glVertex3f(px0, pz0, py0);
+                    glVertex3f(px1, pz1, py1);
+                    glVertex3f(px1, pz1, py1);
+                    glVertex3f(px2, pz2, py2);
+                    glVertex3f(px2, pz2, py2);
+                    glVertex3f(px3, pz3, py3);
+                    glVertex3f(px3, pz3, py3);
+                    glVertex3f(px0, pz0, py0);
+                    glEnd();
+                }
             }
        }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //plane
         glBegin(GL_TRIANGLES);
         //set_colormap(5,scalar_col, n_colors, 10, 0, hues, sats);
-        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(0, 0, 0);
-        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(0, 0, 49);
-        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(49, 0, 49);
-        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(0, 0, 0);
-        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(49, 0, 49);
-        glColor3f(0.5f,0.5f,0.5f);    glVertex3f(49, 0, 0);
+        /*if(light){
+            GLfloat col[] = {0.5f, 0.5f, 0.5f, 1.f};
+            glMaterialfv(GL_FRONT_AND_BACK , GL_DIFFUSE, col);
+        }else*/
+            glColor3f(0.5f,0.5f,0.5f);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 49);
+        glVertex3f(49, 0, 49);
+        glVertex3f(0, 0, 0);
+        glVertex3f(49, 0, 49);
+        glVertex3f(49, 0, 0);
         glEnd();
+        /*if(light)
+        {
+            glDisable(GL_LIGHTING);
+            glDisable(GL_LIGHT0);
+        }*/
         glPopMatrix();
         glLoadIdentity();
     }
@@ -648,6 +726,11 @@ void MyGLWidget::setInterpolation(bool b)
 void MyGLWidget::setDataAlpha(bool new_data_alpha)
 {
     data_alpha = new_data_alpha;
+}
+
+void MyGLWidget::setGrid(bool b)
+{
+    grid = b;
 }
 
 void MyGLWidget::setClampMax(double new_clamp_max)
