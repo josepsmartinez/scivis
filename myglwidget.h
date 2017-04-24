@@ -57,8 +57,6 @@ public slots:
 
     void setDataAlpha(bool);
 
-    void setGrid(bool);
-
     void hedgehogType(QString new_hedgehog_type);
 
     void hedgehogScalar(int new_h_scalar);
@@ -202,7 +200,6 @@ private:
     bool surface_ready;
     fftw_real dt;
     float initial_x1, initial_x2, initial_y1, initial_y2;
-    bool grid;
 
 
     StreamSurface* surfaceclass;
