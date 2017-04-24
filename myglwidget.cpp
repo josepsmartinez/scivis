@@ -151,11 +151,11 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
         glScalef(winWidth/DIM,(winHeight)/(((float)timesteps_surface-1)/(float)timesteps_between_surface),winHeight/DIM);
         glTranslatef(0,0,-DIM/2);
 
-        /*glColor4f(1, 1, 1, 1); // Set current color to white
+        glColor4f(1, 1, 1, 1); // Set current color to white
         GLfloat lightpos[] = {0., 0., 50, 0.};
         GLfloat LightDiffuse[]=	{ 1.f, 1.f, 1.f, 1.0f };
         glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
-        glLightfv(GL_LIGHT0, GL_POSITION, lightpos);*/
+        glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 
         double px0, py0, pz0, px1, py1, pz1, px2, py2, pz2, px3, py3, pz3;
         QColor p0c, p1c, p2c, p3c;
