@@ -341,15 +341,9 @@ void Window::on_reset_simulation_clicked()
 void Window::on_checkBox_3_clicked(bool checked)
 {
     ui->myGLWidget->setInterpolation(checked);
-    ui->inter_h->setChecked(checked);
 }
 
 void Window::on_drawStreamsurface_2_clicked(bool checked)
 {
     ui->myGLWidget->setGrid(checked);
-}
-
-void Window::on_inter_h_clicked(bool checked)
-{
-    ui->checkBox_3->click();
 }

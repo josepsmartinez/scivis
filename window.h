@@ -134,8 +134,6 @@ private slots:
 
     void on_drawStreamsurface_2_clicked(bool checked);
 
-    void on_inter_h_clicked(bool checked);
-
 public:
     Ui::Window *ui;
 };
