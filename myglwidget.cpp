@@ -18,7 +18,7 @@ MyGLWidget::MyGLWidget(QWidget *parent)
 {
     //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
     color_dir = 1;
-    vec_scale = 1000;			//scaling of hedgehogs
+    vec_scale = pow(1.01,650);			//scaling of hedgehogs
     draw_smoke = true;           //draw the smoke or not
     draw_vecs = true;            //draw the vector field or not
     draw_frozenstreamline = true;
@@ -27,6 +27,7 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     draw_streamsurface = false;
     separate_streamlines = true;
     streamline_lenght = 250;
+    interpolate = true;
     hedgehog_type = HEDGEHOG_LINE;
     hedgehog_scalar = DATA_DENSITY;
     hedgehog_vector = DATA_VELOCITY;
@@ -222,7 +223,13 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                         }
 
                         idx = ((int)(stream_points[i].p[0] + 0.5f)) + ((int)(stream_points[i].p[1] + 0.5f))*DIM;
-                        set_colormap(cur_vectorial_draw->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
+                        fftw_real val;
+                        if(interpolate){
+                            val = cur_vectorial_draw->read(stream_points[i].p[0],stream_points[i].p[1]);
+                        }else{
+                            val = cur_vectorial_draw->read(idx);
+                        }
+                        set_colormap(val,scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
                         glVertex2f(wn+stream_points[i].p[0]*wn, hn+stream_points[i].p[1]*hn);
                     }
                     glEnd();
@@ -239,8 +246,10 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 for (i = 0; i < COL; i++)
                   for (j = 0; j < ROW; j++)
                   {
-                    int interpolated_j = ((float)j+ jitter_j[i][j])*((float)DIM/(float)ROW) +0.5; // closest neighbor
-                    int interpolated_i = ((float)i+ jitter_i[i][j])*((float)DIM/(float)COL) +0.5;
+                    float xi = ((float)i+ jitter_i[i][j])*((float)DIM/(float)COL);
+                    float yi = ((float)j+ jitter_j[i][j])*((float)DIM/(float)ROW);
+                    int interpolated_j = yi +0.5; // closest neighbor
+                    int interpolated_i = xi +0.5;
                     idx = interpolated_j*DIM + interpolated_i; // normal grid
                     if(clamp)
                     {
@@ -256,13 +265,27 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                             cur_scalar_draw_hedgehog = scalar_draw_hedgehog;
 
 
+                    fftw_real val;
+                    if(interpolate){
+                        val = cur_scalar_draw_hedgehog->read(xi,yi);
+                    }else{
+                        val = cur_scalar_draw_hedgehog->read(idx);
+                    }
                     QColor colr = set_colormap(cur_scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
 
                     vectorialField* cur_vectorial_draw = buffer[hedgehog_vector].read(plane);
                     if(cur_vectorial_draw == NULL||!draw_slices)
                             cur_vectorial_draw = vectorial_draw;
-                    fftw_real x = vec_scale * cur_vectorial_draw->read_x(idx);
-                    fftw_real y = vec_scale * cur_vectorial_draw->read_y(idx);
+                    fftw_real x;
+                    fftw_real y;
+                    if(interpolate){
+                        x = vec_scale * cur_vectorial_draw->read_x(xi,yi);
+                        y = vec_scale * cur_vectorial_draw->read_y(xi,yi);
+                    }else{
+                        x = vec_scale * cur_vectorial_draw->read_x(idx);
+                        y = vec_scale * cur_vectorial_draw->read_y(idx);
+                    }
+
                     float angle=0;
                     float lenght = sqrt(x*x + y*y);
                     if(lenght != 0)
@@ -535,6 +558,12 @@ void MyGLWidget::do_one_simulation_step(bool update)
                 for(int i=0;i<streamsurface.back().size();i++)
                 {
                     int idx = ((int)(streamsurface[added][i].p[0] + 0.5f)) + ((int)(streamsurface[added][i].p[1] + 0.5f))*DIM;
+                    fftw_real val;
+                    if(interpolate){
+                        val = simulation.get_v()->read(streamsurface[added][i].p[0],streamsurface[added][i].p[1]);
+                    }else{
+                        val = simulation.get_v()->read(idx);
+                    }
                     curval.push_back(simulation.get_v()->read(idx));
                 }
                 values.push_back(curval);
@@ -607,6 +636,11 @@ void MyGLWidget::setClamp(bool new_clamp)
 void MyGLWidget::setSeparateStreamlines(bool new_sep_s)
 {
     separate_streamlines = new_sep_s;
+}
+
+void MyGLWidget::setInterpolation(bool b)
+{
+    interpolate = b;
 }
 
 void MyGLWidget::setDataAlpha(bool new_data_alpha)
@@ -739,7 +773,7 @@ void MyGLWidget::hedgehogScaling(int position)
     //  	  case 'S': vec_scale *= 1.2; break;
     //        case 's': vec_scale *= 0.8; break;
     // The scaling goes exponential with keyboard, but with slide can just do linear
-    vec_scale = position*2;
+    vec_scale = pow(1.01,position);
 }
 
 void MyGLWidget::fluidViscosity(int position)
@@ -878,7 +912,7 @@ void MyGLWidget::update_streamline_matrix()
             x = (rand()%500)/10.0;
             y = (rand()%500)/10.0;
         }
-        streamlines[i] = new StreamLine(x,y, simulation.get_v(), DIM, 0.3f, true);
+        streamlines[i] = new StreamLine(x,y, simulation.get_v(), DIM, 0.1f, true);
 
     }
 }

@@ -53,6 +53,8 @@ public slots:
 
     void setSeparateStreamlines(bool);
 
+    void setInterpolation(bool);
+
     void setDataAlpha(bool);
 
     void hedgehogType(QString new_hedgehog_type);
@@ -152,6 +154,7 @@ private:
     bool draw_frozenstreamline;
     bool separate_streamlines;
     int streamline_lenght;
+    bool interpolate;
     int hedgehog_type;
     int hedgehog_scalar;
     int hedgehog_vector;

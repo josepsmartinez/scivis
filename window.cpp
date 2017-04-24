@@ -334,3 +334,8 @@ void Window::on_reset_simulation_clicked()
 {
     ui->myGLWidget->resetSimulation();
 }
+
+void Window::on_checkBox_3_clicked(bool checked)
+{
+    ui->myGLWidget->setInterpolation(checked);
+}

@@ -130,6 +130,8 @@ private slots:
 
     void on_reset_simulation_clicked();
 
+    void on_checkBox_3_clicked(bool checked);
+
 public:
     Ui::Window *ui;
 };
