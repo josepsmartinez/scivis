@@ -63,6 +63,29 @@ fftw_real Field::read(int ix)
     return field[ix];
 }
 
+fftw_real Field::read(float x, float y)
+{
+    int ixx = x;
+    int ixx2 = ixx+1;
+    int iyy = y;
+    int iyy2 = iyy+1;
+    float restx2 = x - ixx;
+    float resty2 = y - iyy;
+    float restx = 1 - restx2;
+    float resty = 1 - resty2;
+    int idx0 = ixx + iyy*dim_size;
+    int idx1 = ixx + iyy2*dim_size;
+    int idx2 = ixx2 + iyy*dim_size;
+    int idx3 = ixx2 + iyy2*dim_size;
+
+    return field[idx0]*restx*resty +
+            field[idx1]*restx*resty2 +
+            field[idx2]*restx2*resty +
+            field[idx3]*restx2*resty2;
+
+
+}
+
 fftw_real Field::get_min()
 {
     return min;
@@ -108,12 +131,12 @@ void vectorialField::initialize(int N, int DIM)
     //gradient.initialize(N, DIM);
     x.initialize(N, DIM); y.initialize(N, DIM);
 }
-void vectorialField::deepcopyv(vectorialField *f)
+void vectorialField::deepcopy(vectorialField *f)
 {
     //memcpy(field, f->field, sizeof(field));
-    x.deepcopy(&(f->x));
-    y.deepcopy(&(f->y));
-    this->deepcopy((Field*)f);
+    x.Field::deepcopy(&(f->x));
+    y.Field::deepcopy(&(f->y));
+    this->Field::deepcopy((Field*)f);
     /*
     for(int i = 0;i<dim_size*dim_size;i++)
     {
@@ -147,8 +170,19 @@ void vectorialField::inc_y(int ix, fftw_real value)
 fftw_real vectorialField::read_x(int ix){
     return x.read(ix);
 }
+
+fftw_real vectorialField::read_x(float ix, float iy)
+{
+    return x.read(ix, iy);
+}
+
 fftw_real vectorialField::read_y(int ix){
     return y.read(ix);
+}
+
+fftw_real vectorialField::read_y(float ix, float iy)
+{
+    return y.read(ix, iy);
 }
 
 // GRADIENT

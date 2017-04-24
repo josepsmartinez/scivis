@@ -134,6 +134,7 @@ public slots:
 
 
 
+
 protected:
     void initializeGL();
     void paintGL();
@@ -192,7 +193,8 @@ private:
     Field* scalar_draw_hedgehog;
     vectorialField* vectorial_draw;
 
-    vector<TimeBuffer> buffer;
+    TimeBuffer<Field> rho_buffer;
+    vector<TimeBuffer<vectorialField>> vec_buffers;
 
     int numStreamSurface;
     int timesteps_surface;

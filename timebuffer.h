@@ -4,22 +4,25 @@
 #include "fields.h"
 
 using namespace std;
+
+template <typename F>
 class TimeBuffer
 {
 private:
     int size;
     int dim;
-    vectorialField* source;
+    F* source;
     int istart, stored;
-    vector<vectorialField> storage;
+    vector<F> storage;
 
 public:
-    TimeBuffer() {};
-    ~TimeBuffer() {};
-    void initialize(int n, vectorialField *src, int dim);
+    TimeBuffer<F>() {}
+    ~TimeBuffer<F>() {}
+    void initialize(int n, F* src, int dim);
+    //void initialize(int n, Field *src, int dim);
 
     void append();
-    vectorialField *read(int i);
+    F* read(int i);
 };
 
 #endif // TIMEBUFFER_H

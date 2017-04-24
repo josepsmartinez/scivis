@@ -19,9 +19,9 @@ class Simulation {
         bool get_frozen() const;
         double get_dt() const;				//simulation time step
         float get_visc() const;				//fluid viscosity
-        cVectorialField* get_rho() ;
+        cField* get_rho() ;
         cVectorialField* get_f() ;
-        cVectorialField* get_rho0() ;
+        cField* get_rho0() ;
         cVectorialField* get_v() ;
         fftw_real* get_vm() const;
         fftw_real* get_vx0() const;
@@ -62,7 +62,7 @@ class Simulation {
         //fftw_real *fx, *fy, *fscalar;
         cVectorialField f; //(f.x,f.y)   = user-controlled simulation forces, steered with the mouse
         //fftw_real *rho, *rho0;			//smoke density at the current (rho) and previous (rho0) moment
-        cVectorialField rho, rho0;
+        cField rho, rho0;
         // min/max are lowest and highest values in the grid
         fftw_real vx_min, vx_max, vy_min, vy_max, v_min, v_max;
         fftw_real fx_min, fx_max, fy_min, fy_max, f_min, f_max;

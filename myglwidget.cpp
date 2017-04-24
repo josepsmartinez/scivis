@@ -68,13 +68,14 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     timesteps_each_slice = 10;
     timestep_count = timesteps_each_slice;
 
-    buffer.resize(5);
+    //buffer[DATA_DENSITY].initialize(num_slices,simulation.get_rho(),DIM);
+    rho_buffer.initialize(num_slices,(Field*)simulation.get_rho(),DIM);
 
-    buffer[DATA_DENSITY].initialize(num_slices,simulation.get_rho(),DIM);
-    buffer[DATA_FORCEFIELD].initialize(num_slices,simulation.get_f(),DIM);
-    buffer[DATA_VELOCITY].initialize(num_slices,simulation.get_v(),DIM);
-    buffer[DATA_GRADIENT_DENSITY].initialize(num_slices,simulation.get_rho()->get_gradient(),DIM);
-    buffer[DATA_GRADIENT_VELOCITY].initialize(num_slices,simulation.get_v()->get_gradient(),DIM);
+    vec_buffers.resize(4);
+    vec_buffers[DATA_FORCEFIELD].initialize(num_slices,simulation.get_f(),DIM);
+    vec_buffers[DATA_VELOCITY].initialize(num_slices,simulation.get_v(),DIM);
+    vec_buffers[DATA_GRADIENT_DENSITY].initialize(num_slices,simulation.get_rho()->get_gradient(),DIM);
+    vec_buffers[DATA_GRADIENT_VELOCITY].initialize(num_slices,simulation.get_v()->get_gradient(),DIM);
 
     numStreamSurface = 10;
     timesteps_surface = 100;
@@ -278,7 +279,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
             fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
 
             if(draw_streamline || (simulation.get_frozen() && draw_frozenstreamline)) { // streamline
-                vectorialField* cur_vectorial_draw = buffer[DATA_VELOCITY].read(plane);
+                vectorialField* cur_vectorial_draw = vec_buffers[DATA_VELOCITY].read(plane);
 
                 if(cur_vectorial_draw == NULL||!draw_slices)
                         cur_vectorial_draw = vectorial_draw;
@@ -338,7 +339,8 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                         max = scalar_draw_hedgehog->get_max();
                         min = 0;
                     }
-                    Field* cur_scalar_draw_hedgehog = buffer[hedgehog_scalar].read(plane);
+                    Field* cur_scalar_draw_hedgehog = (hedgehog_scalar == DATA_DENSITY) ? rho_buffer.read(plane) : vec_buffers[hedgehog_scalar].read(plane);
+
                     if(cur_scalar_draw_hedgehog == NULL||!draw_slices)
                             cur_scalar_draw_hedgehog = scalar_draw_hedgehog;
 
@@ -351,7 +353,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                     }
                     QColor colr = set_colormap(cur_scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
 
-                    vectorialField* cur_vectorial_draw = buffer[hedgehog_vector].read(plane);
+                    vectorialField* cur_vectorial_draw = vec_buffers[hedgehog_vector].read(plane);
                     if(cur_vectorial_draw == NULL||!draw_slices)
                             cur_vectorial_draw = vectorial_draw;
                     fftw_real x;
@@ -431,7 +433,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                             max = scalar_draw->get_max();
                             min = 0;
                         }
-                        Field* cur_scalar_draw = buffer[data_type].read(plane);
+                        Field* cur_scalar_draw = (hedgehog_scalar == DATA_DENSITY) ? rho_buffer.read(plane) : vec_buffers[hedgehog_scalar].read(plane);
                         if(cur_scalar_draw == NULL||!draw_slices)
                                 cur_scalar_draw = scalar_draw;
                         set_colormap(cur_scalar_draw->read(idx0),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);    glVertex2f(px0, py0);
@@ -575,9 +577,9 @@ void MyGLWidget::do_one_simulation_step(bool update)
         timestep_count++;
         if(timestep_count >= timesteps_each_slice)
         {
-            buffer[DATA_DENSITY].append();
-            buffer[DATA_VELOCITY].append();
-            buffer[DATA_FORCEFIELD].append();
+            rho_buffer.append();
+            vec_buffers[DATA_VELOCITY].append();
+            vec_buffers[DATA_FORCEFIELD].append();
             timestep_count = 0;
         }
     }else if (draw_streamsurface && !surface_ready)
@@ -625,9 +627,9 @@ void MyGLWidget::do_one_simulation_step(bool update)
             timestep_count++;
             if(timestep_count >= timesteps_each_slice)
             {
-                buffer[DATA_DENSITY].append();
-                buffer[DATA_VELOCITY].append();
-                buffer[DATA_FORCEFIELD].append();
+                rho_buffer.append();
+                vec_buffers[DATA_VELOCITY].append();
+                vec_buffers[DATA_FORCEFIELD].append();
                 timestep_count = 0;
             }
             if(i%timesteps_between_surface == 0){
