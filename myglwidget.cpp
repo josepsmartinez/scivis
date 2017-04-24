@@ -89,6 +89,8 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     initial_x2 = 29;
     initial_y2 = 29;
 
+     grid = false;
+
 
     timestep(6000);
 }
@@ -131,7 +133,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
     if(draw_streamsurface)
     {
         glPushMatrix();
-
+        glMatrixMode(GL_MODELVIEW);
         slice_to_position(num_slices/2);
         glTranslatef(0,0,-winHeight/2);
         glScalef(winWidth/DIM,(winHeight)/(((float)timesteps_surface-1)/(float)timesteps_between_surface),winHeight/DIM);
@@ -171,6 +173,19 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                 glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());    glVertex3f(px2, pz2, py2);
                 glColor3f(p3c.redF(),p3c.greenF(),p3c.blueF());    glVertex3f(px3, pz3, py3);
                 glEnd();
+                if(grid){
+                glBegin(GL_LINES);
+                    glColor3f(0.f,0.f,0.f);
+                glVertex3f(px0, pz0, py0);
+                glVertex3f(px1, pz1, py1);
+                glVertex3f(px1, pz1, py1);
+                glVertex3f(px2, pz2, py2);
+                glVertex3f(px2, pz2, py2);
+                glVertex3f(px3, pz3, py3);
+                glVertex3f(px3, pz3, py3);
+                glVertex3f(px0, pz0, py0);
+                glEnd();
+            }
             }
        }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //plane
@@ -978,3 +993,7 @@ void MyGLWidget::sety2(float n)
    initial_y2 = n;
 }
 
+void MyGLWidget::setGrid(bool b)
+{
+    grid = b;
+}
