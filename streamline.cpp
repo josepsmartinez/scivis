@@ -48,10 +48,9 @@ StreamLine &StreamLine::operator++()
     {
         int ix = get_ix();
 
-        //if(!interpolate)
-        //    Point shift({v->read_x(ix), v->read_y(ix)});
-        //else
-            Point shift({v->read_x(current.p[0], current.p[1]), v->read_y(current.p[0], current.p[1])});
+        //Point shift({v->read_x(ix), v->read_y(ix)});
+
+        Point shift({v->read_x(current.p[0], current.p[1]), v->read_y(current.p[0], current.p[1])});
         if(normalize) shift.scalar_mul(1/shift.norm());
         shift.scalar_mul(dt);
 

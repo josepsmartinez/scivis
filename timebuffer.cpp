@@ -1,8 +1,7 @@
 #include "timebuffer.h"
 
 
-template <typename F>
-void TimeBuffer<F>::initialize(int n, F* src, int dime)
+void TimeBuffer::initialize(int n, vectorialField *src, int dime)
 {
     size=n; source=src;
     dim = dime;
@@ -13,24 +12,22 @@ void TimeBuffer<F>::initialize(int n, F* src, int dime)
 
 }
 
-template <typename F>
-void TimeBuffer<F>::append()
+void TimeBuffer::append()
 {
     if (stored < size) { // buffer is not full yet
 
         storage[stored].initialize(dim*dim,dim);
-        storage[stored].deepcopy(source);
+        storage[stored].deepcopyv(source);
         stored++;
     }
     else {
-        storage[istart].deepcopy(source); // overwrites initial position
+        storage[istart].deepcopyv(source); // overwrites initial position
         istart++;
         if(istart==storage.size()) istart =0;
     }
 }
 
-template <typename F>
-F* TimeBuffer<F>::read(int i)
+vectorialField* TimeBuffer::read(int i)
 {
     if (i < stored) {
         i += istart;
@@ -39,7 +36,3 @@ F* TimeBuffer<F>::read(int i)
     }
     else return NULL;
 }
-
-
-template class TimeBuffer<vectorialField>;
-template class TimeBuffer<Field>;

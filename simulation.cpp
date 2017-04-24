@@ -21,8 +21,8 @@ cVectorialField* Simulation::get_f()  {return &f;}
 //fftw_real* Simulation::get_fx() const{return fx;}
 //fftw_real* Simulation::get_fy() const{return fy;}
 
-cField* Simulation::get_rho() {return &rho;}
-cField *Simulation::get_rho0()  {return &rho0;}
+cVectorialField* Simulation::get_rho() {return &rho;}
+cVectorialField *Simulation::get_rho0()  {return &rho0;}
 
 cVectorialField* Simulation::get_v()  {return &v;}
 fftw_real* Simulation::get_vm() const {return vm;}

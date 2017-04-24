@@ -24,7 +24,6 @@ public:
     void update(int, fftw_real);
     void inc(int, fftw_real);
     fftw_real read(int);
-    fftw_real read(float, float);
 
     fftw_real get_min();
     fftw_real get_max();
@@ -53,16 +52,14 @@ public:
     void initialize(int,int); // also initializes x,y
 
 
-    void deepcopy(vectorialField *f);
+    void deepcopyv(vectorialField *f);
     void update_x(int, fftw_real);
     void update_y(int, fftw_real);
     void inc_x(int, fftw_real);
     void inc_y(int, fftw_real);
 
     fftw_real read_x(int);
-    fftw_real read_x(float,float);
     fftw_real read_y(int);
-    fftw_real read_y(float,float);
 };
 
 class gradientField : public vectorialField {
