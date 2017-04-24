@@ -87,6 +87,8 @@ public slots:
 
     void setSliceTimestep(int);
 
+    void resetSimulation();
+
     void changeData(QString datatype);
 
     void timestep(int position);

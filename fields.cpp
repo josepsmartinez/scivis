@@ -90,6 +90,18 @@ int Field::index1d(int i, int j) {
 
 // VECTORIAL
 
+vectorialField::vectorialField()
+    : Field()
+{
+
+}
+
+vectorialField::vectorialField(const Field &f)
+    : Field(f)
+{
+
+}
+
 void vectorialField::initialize(int N, int DIM)
 {
     Field::initialize(N, DIM);
@@ -99,11 +111,16 @@ void vectorialField::initialize(int N, int DIM)
 void vectorialField::deepcopyv(vectorialField *f)
 {
     //memcpy(field, f->field, sizeof(field));
+    x.deepcopy(&(f->x));
+    y.deepcopy(&(f->y));
+    this->deepcopy((Field*)f);
+    /*
     for(int i = 0;i<dim_size*dim_size;i++)
     {
         field[i] = f->field[i];
     }
     min=f->min; max=f->max;
+    */
 }
 
 

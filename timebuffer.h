@@ -9,17 +9,17 @@ class TimeBuffer
 private:
     int size;
     int dim;
-    Field* source;
+    vectorialField* source;
     int istart, stored;
-    vector<Field> storage;
+    vector<vectorialField> storage;
 
 public:
     TimeBuffer() {};
     ~TimeBuffer() {};
-    void initialize(int n, Field *src, int dim);
+    void initialize(int n, vectorialField *src, int dim);
 
     void append();
-    Field *read(int i);
+    vectorialField *read(int i);
 };
 
 #endif // TIMEBUFFER_H

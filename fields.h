@@ -47,6 +47,8 @@ private:
 public:
     //gradientField gradient;
 
+    vectorialField();
+    vectorialField(const Field &f);
     void initialize(int,int); // also initializes x,y
 
 

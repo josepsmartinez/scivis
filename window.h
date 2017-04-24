@@ -128,6 +128,8 @@ private slots:
 
     void on_y2_valueChanged(int value);
 
+    void on_reset_simulation_clicked();
+
 public:
     Ui::Window *ui;
 };

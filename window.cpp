@@ -294,7 +294,6 @@ void Window::on_numStreamSurface_valueChanged(int value)
 void Window::on_totalStreamsurfaceTimestep_valueChanged(int value)
 {
     if(ui->timestepBetweensurfaces->value()>value/2){
-        ui->myGLWidget->SurfacetotalTimestep(value/2);
         ui->timestepBetweensurfaces->setValue(value/2);}
     ui->myGLWidget->SurfacetotalTimestep(value);
 }
@@ -302,7 +301,6 @@ void Window::on_totalStreamsurfaceTimestep_valueChanged(int value)
 void Window::on_timestepBetweensurfaces_valueChanged(int value)
 {
     if(ui->totalStreamsurfaceTimestep->value()<value*2){
-        ui->myGLWidget->SurfacetotalTimestep(value*2);
         ui->totalStreamsurfaceTimestep->setValue(value*2);}
     ui->myGLWidget->SurfaceBetweenTimestep(value);
 }
@@ -330,4 +328,9 @@ void Window::on_x2_valueChanged(int value)
 void Window::on_y2_valueChanged(int value)
 {
     ui->myGLWidget->sety2((float)value/10.f);
+}
+
+void Window::on_reset_simulation_clicked()
+{
+    ui->myGLWidget->resetSimulation();
 }

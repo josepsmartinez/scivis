@@ -67,11 +67,13 @@ MyGLWidget::MyGLWidget(QWidget *parent)
     timesteps_each_slice = 10;
     timestep_count = timesteps_each_slice;
 
-    buffer.resize(3);
+    buffer.resize(5);
 
     buffer[DATA_DENSITY].initialize(num_slices,simulation.get_rho(),DIM);
     buffer[DATA_FORCEFIELD].initialize(num_slices,simulation.get_f(),DIM);
     buffer[DATA_VELOCITY].initialize(num_slices,simulation.get_v(),DIM);
+    buffer[DATA_GRADIENT_DENSITY].initialize(num_slices,simulation.get_rho()->get_gradient(),DIM);
+    buffer[DATA_GRADIENT_VELOCITY].initialize(num_slices,simulation.get_v()->get_gradient(),DIM);
 
     numStreamSurface = 10;
     timesteps_surface = 100;
@@ -159,7 +161,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
 
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 glBegin(GL_TRIANGLES);
-                //set_colormap(5,scalar_col, n_colors, 10, 0, hues, sats);
+                //set_colormap(5,scalar_col, n_colors, 10, 0, , sats);
                 glColor3f(p0c.redF(),p0c.greenF(),p0c.blueF());    glVertex3f(px0, pz0, py0);
                 glColor3f(p1c.redF(),p1c.greenF(),p1c.blueF());    glVertex3f(px1, pz1, py1);
                 glColor3f(p2c.redF(),p2c.greenF(),p2c.blueF());    glVertex3f(px2, pz2, py2);
@@ -197,8 +199,14 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
             fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
 
             if(draw_streamline || (simulation.get_frozen() && draw_frozenstreamline)) { // streamline
+                vectorialField* cur_vectorial_draw = buffer[DATA_VELOCITY].read(plane);
+
+                if(cur_vectorial_draw == NULL||!draw_slices)
+                        cur_vectorial_draw = vectorial_draw;
+
                 for(int i = 0; i < numStreamline; i++) //get and draw lines
                 {
+                    streamlines[i]->change_field(cur_vectorial_draw);
                     vector<Point> stream_points = streamlines[i]->line(-1,streamline_lenght); // negative is until border is reached
                     glBegin(GL_LINE_STRIP);
                     //glColor3f(1.f,1.f,1.f);
@@ -214,7 +222,7 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                         }
 
                         idx = ((int)(stream_points[i].p[0] + 0.5f)) + ((int)(stream_points[i].p[1] + 0.5f))*DIM;
-                        set_colormap(simulation.get_v()->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
+                        set_colormap(cur_vectorial_draw->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
                         glVertex2f(wn+stream_points[i].p[0]*wn, hn+stream_points[i].p[1]*hn);
                     }
                     glEnd();
@@ -246,9 +254,15 @@ void MyGLWidget::paintGL() //glutDisplayFunc(display);
                     Field* cur_scalar_draw_hedgehog = buffer[hedgehog_scalar].read(plane);
                     if(cur_scalar_draw_hedgehog == NULL||!draw_slices)
                             cur_scalar_draw_hedgehog = scalar_draw_hedgehog;
+
+
                     QColor colr = set_colormap(cur_scalar_draw_hedgehog->read(idx),scalar_col, n_colors, max, min, hues, sats, alpha, data_alpha);
-                    fftw_real x = vec_scale * vectorial_draw->read_x(idx);
-                    fftw_real y = vec_scale * vectorial_draw->read_y(idx);
+
+                    vectorialField* cur_vectorial_draw = buffer[hedgehog_vector].read(plane);
+                    if(cur_vectorial_draw == NULL||!draw_slices)
+                            cur_vectorial_draw = vectorial_draw;
+                    fftw_real x = vec_scale * cur_vectorial_draw->read_x(idx);
+                    fftw_real y = vec_scale * cur_vectorial_draw->read_y(idx);
                     float angle=0;
                     float lenght = sqrt(x*x + y*y);
                     if(lenght != 0)
@@ -644,6 +658,11 @@ void MyGLWidget::setSliceTimestep(int n)
 {
     timesteps_each_slice = n;
 }
+
+void MyGLWidget::resetSimulation()
+{
+    simulation.init_simulation(DIM);
+}
 void MyGLWidget::setNColors(int n)
 {
     n_colors = n;
@@ -754,6 +773,10 @@ void MyGLWidget::scalarColoring(QString scalartype){
     }
     else if (scalartype == "rainbow2") {
         scalar_col = COLOR_RAINBOW2;
+    }
+    else if(scalartype == "zebra")
+    {
+        scalar_col = COLOR_ZEBRA;
     }
 }
 

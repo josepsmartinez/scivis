@@ -7,6 +7,7 @@ const int COLOR_RAINBOW=1;
 const int COLOR_BANDS=2;
 const int COLOR_RAINBOW2=3;
 const int COLOR_ARRAY=4;
+const int COLOR_ZEBRA=5;
 
 // COLOR CLASS
 Color::Color(float r, float g, float b)
@@ -135,6 +136,12 @@ void color_array(float value,float* R,float* G,float* B,vector<Color> array) {
 
 }
 
+void zebra(float value,float* R,float* G,float* B, int n_colors) {
+    if (value<0) value=0; if (value>1) value=1.f;
+
+    *R = *G = *B = (int)(value * n_colors + 0.1f)%2;
+}
+
 void ncolors_subsample(float* value, int n_colors) { // by reference
     *value = (1/(float)(n_colors)) *
             min((int) ((n_colors) * *value), n_colors-1); // min maps value=1 to the second "higher" color
@@ -173,6 +180,9 @@ QColor set_colormap(float value, int scalar_col, int n_colors, fftw_real max=1.f
     else if (scalar_col == COLOR_ARRAY)
         color_array(value,&R,&G,&B,carr);
         //rainbow2(value,&R,&G,&B);
+    else if (scalar_col == COLOR_ZEBRA){
+        zebra(value,&R,&G,&B,n_colors);
+    }
     else if (scalar_col==COLOR_BANDS){
        const int NLEVELS = 7;
        value *= NLEVELS; value = (int)(value); value/= NLEVELS;
